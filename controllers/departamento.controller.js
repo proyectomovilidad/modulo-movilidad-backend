@@ -19,11 +19,12 @@ const saveOrUpdateDepartamento= async (req, res, next) => {
         console.log(e);
       }
 }
-
-const getDepartamento = async (req, res, next) => {
+ 
+const getDepartamentos = async (req, res, next) => {
   try { 
-      const departamento = await model.getDepartamento()
-      res.send(departamento)
+      const { codigo_pais } = req.body
+      const departamentos = await model.getDepartamentos(codigo_pais)
+      res.send(departamentos)
     } catch (e) {
       errorUtils.sendErrorResponse(res, e)
     }
@@ -33,7 +34,7 @@ const getDepartamento = async (req, res, next) => {
 
 module.exports = {
     saveOrUpdateDepartamento,
-    getDepartamento,
+    getDepartamentos,
    
    
 }

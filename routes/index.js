@@ -24,6 +24,8 @@ const estadoDocRoute = require('./estadoDoc.routes')
 const sedeRoute = require('./sede.routes')
 const inscripcionRoute = require('./inscripcion.routes')
 const preguntasRoute = require('./preguntas.routes')
+const tipoConvenioRoute = require('./tipoConvenio.routes')
+
 
 
 const routing = (app) => {
@@ -54,6 +56,8 @@ const routing = (app) => {
     app.use('/sede', sedeRoute)
     app.use('/inscripcion', inscripcionRoute)
     app.use('/preguntas', preguntasRoute)
+    app.use('/tipoConvenio', tipoConvenioRoute)
+
     
 }
 

@@ -1,7 +1,7 @@
 const validator = require('./generic.validators')
 
-const validatePais = (user) => {
-  const properties = ['nombre_pais', 'codigo_pais']
+const validateTipoConvenio = (user) => {
+  const properties = ['nombre_tipo_convenio']
   validator.validateProperties(user, properties)
 }
 
@@ -11,7 +11,7 @@ const transformObjectId = (padlock) => {
 }
 
 module.exports = {
-    validatePais ,
+    validateTipoConvenio ,
     transformObjectId,
     ...validator
 }

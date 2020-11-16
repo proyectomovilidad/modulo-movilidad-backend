@@ -14,16 +14,16 @@ const saveOrUpdateCiudad  = async (ciudadId, ciudadBody) => {
     returnOriginal: false
   })
   return ciudad.value
-}
-
-const getCiudad = async ()=> {
+} 
+ 
+const getCiudades = async (codigo_departamento)=> {
   const connection = await mongoConnector
  
-  const ciudad = await connection.collection('ciudad').find({}).toArray() // Devuelve la respuesta como un array de objetos
-  return ciudad
+  const ciudades = await connection.collection('ciudad').find({ codigo_departamento }).toArray() // Devuelve la respuesta como un array de objetos
+  return ciudades
 }
 
 module.exports = {
     saveOrUpdateCiudad,
-    getCiudad
+    getCiudades
 }

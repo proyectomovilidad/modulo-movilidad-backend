@@ -16,15 +16,15 @@
    })
    return departamento.value
  }
- 
- const getDepartamento = async ()=> {
+  
+ const getDepartamentos = async (codigo_pais)=> {
    const connection = await mongoConnector
   
-   const departamento = await connection.collection('departamento').find({}).toArray() // Devuelve la respuesta como un array de objetos
-   return departamento
+   const departamentos = await connection.collection('departamento').find({ codigo_pais }).toArray() // Devuelve la respuesta como un array de objetos
+   return departamentos
  }
  
  module.exports = {
     saveOrUpdateDepartamento,
-    getDepartamento
+    getDepartamentos
  }

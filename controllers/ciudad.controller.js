@@ -18,12 +18,13 @@ const saveOrUpdateCiudad= async (req, res, next) => {
       } catch (e) {
         console.log(e);
       }
-}
+} 
 
-const getCiudad = async (req, res, next) => {
+const getCiudades = async (req, res, next) => {
   try { 
-      const ciudad = await model.getCiudad()
-      res.send(ciudad)
+    const { codigo_departamento } = req.body
+      const ciudades = await model.getCiudades(codigo_departamento)
+      res.send(ciudades)
     } catch (e) {
       errorUtils.sendErrorResponse(res, e)
     }
@@ -67,7 +68,7 @@ const deleteCiudad = async (req, res, next) => {
 
 module.exports = {
     saveOrUpdateCiudad,
-    getCiudad,
+    getCiudades,
     deleteCiudad
    
 }
