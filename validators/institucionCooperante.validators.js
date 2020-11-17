@@ -6,9 +6,9 @@ const validateInstitucionCooperante = (user) => {
 }
 
 const transformObjectId = (padlock) => {
-validator.validateAndTransformId(padlock, 'pais', 'El id del pais no es valido')
- validator.validateAndTransformId(padlock, 'departamento', 'El id del departamento no es valido')
- validator.validateAndTransformId(padlock, 'ciudad', 'El id de al ciudad no es valido')
+//validator.validateAndTransformId(padlock, 'pais', 'El id del pais no es valido')
+ //validator.validateAndTransformId(padlock, 'departamento', 'El id del departamento no es valido')
+ //validator.validateAndTransformId(padlock, 'ciudad', 'El id de al ciudad no es valido')
 
 }
 

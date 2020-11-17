@@ -1,8 +1,8 @@
 const validator = require('./generic.validators')
 
 const validateInscripcion = (user) => {
-  const properties = ['fecha_inscripcion', 'programa_acad', 'semestre', 'fecha_movilidad' , 
-  'codigo_convenio','fecha_retorno', 'tipo_estado', 'tipo_movilidad', 'institucion_cooperante' ]
+  const properties = ['fecha_inscripcion', 'programa_acad', 'semestre', 
+  'codigo_convenio', 'tipo_estado', 'tipo_movilidad', 'institucion_cooperante' ]
   validator.validateProperties(user, properties)
 }
 
