@@ -1,5 +1,9 @@
 const model = require("./../models/aspUisAcademic.models")
+const modelPersonal = require("./../models/aspUisPersonal.models")
+const modelInscripcion = require("./../models/inscripcion.models")
 const validator = require('./../validators/aspUisAcademic.validator')
+const errorUtils = require("./../shared/error.shared")
+
 
 
 
@@ -14,7 +18,7 @@ const saveOrUpdateAspUisAcademic = async (req, res, next) => {
         validator.transformObjectId(req.body)
        const aspUisAcademic = await model.saveOrUpdateAspUisAcademic(id, req.body)
 
-        res.send(aspUisAcademic)
+        res.send( {model: aspUisAcademic, status: true})
       } catch (e) {
         console.log(e);
       }
@@ -81,7 +85,22 @@ const getAspUisAcademicByAnoInscripcion = async (req, res, next) => {
       errorUtils.sendErrorResponse(res, e)
     }
 }
+ 
+const deleteAspUisAcademic  = async (req, res, next) =>{
+  try { 
+    const id = req.params['_id']
+     const aspUisAcademic = await model.deleteAspUisAcademic(id)
+      const aspUisPersonal = await modelPersonal.deleteAspUisPersonal(id)
+      const inscripcion = await modelInscripcion.deleteAspUisInscripcion(id)
 
+      res.send(aspUisAcademic)
+    } catch (e) {
+     // errorUtils.sendErrorResponse(res, e)
+     console.log(e)
+     res.send(aspUisAcademic)
+
+    }
+}
 
 
 
@@ -96,6 +115,7 @@ module.exports = {
     getAspUisAcademicById,
     getAspUisAcademicByCodigo,
     getAspUisAcademicByPeriodoAcademico,
-    getAspUisAcademicByAnoInscripcion
+    getAspUisAcademicByAnoInscripcion,
+    deleteAspUisAcademic
    
 }

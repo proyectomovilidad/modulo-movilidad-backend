@@ -5,17 +5,29 @@ const mongoConnector = require('../bd/mongo.db')
 const saveOrUpdateAspUisAcademic  = async (aspUisAcademicId, aspUisAcademicBody) => {
   const connection = await mongoConnector
   delete aspUisAcademicBody._id
-  const aspUisAcademic = await connection.collection('aspUisAcademic').findOneAndUpdate({
-    _id: new ObjectId(aspUisAcademicId)
-  }, {
-    $set: aspUisAcademicBody
-  }, {
-    upsert: true,
-    returnOriginal: false
-  })
-  return aspUisAcademic.value
+  const valid = await getValidarAspirantes(aspUisAcademicBody.codigo_est)
+  console.log(valid)
+  if ((valid === 0 && !aspUisAcademicId) || (aspUisAcademicId)) {
+    if ((valid === 0 && !aspUisAcademicId)) {aspUisAcademicBody.estado= "1"; } 
+    const aspUisAcademic = await connection.collection('aspUisAcademic').findOneAndUpdate({
+      _id: new ObjectId(aspUisAcademicId)
+    }, {
+      $set: aspUisAcademicBody
+    }, {
+      upsert: true,
+      returnOriginal: false
+    })
+    return aspUisAcademic.value
+  }
+ return {}
 }
 
+const getValidarAspirantes = async (codigo_est) => { // Validar cuantos aspirantes hay con el mismo código de estudiante
+  const connection = await mongoConnector
+  const aspUisAcademic = await connection.collection('aspUisAcademic').find({codigo_est: codigo_est, estado: "1"}).count() 
+return aspUisAcademic
+
+}
 
 const getAspUisAcademic = async ()=> {
   const connection = await mongoConnector
@@ -77,6 +89,20 @@ const getAspUisAcademicByCodigo = async (codigo)=> {
   return aspUisAcademic
 }
 
+const getAspUisAcademicByEstado = async (codigo)=> {
+  const connection = await mongoConnector
+  let aggregate = [  // Array de objetos
+    {
+      $match: { // Reperesenta el select en mongo, los atributos dentro de las llaves son los criterios de busqieda
+        codigo_est:  String(codigo), estado : "1"
+
+      }
+    }
+  ]
+  const aspUisAcademic = await connection.collection('aspUisAcademic').aggregate(aggregate).toArray()
+  return aspUisAcademic
+}
+
 const getAspUisAcademicByAnoInscripcion = async (anoInscripcion)=> {
   const connection = await mongoConnector
   let aggregate = [  
@@ -91,6 +117,24 @@ const getAspUisAcademicByAnoInscripcion = async (anoInscripcion)=> {
 }
 
 
+const deleteAspUisAcademic = async (_id) => {
+  const connection = await mongoConnector
+try {
+  const aspUisAcademic = await connection.collection('aspUisAcademic').findOneAndDelete({codigo_est:_id})
+  
+  if (aspUisAcademic.ok === 1) {
+    return {message: "El documento fue eliminado", status: true};
+  } else {
+    return {message: "El documento no ha sido eliminado", status: false};
+
+  }
+}
+catch (e) {
+  return {message: e, status: false};
+}
+}
+
+
 module.exports = {
   saveOrUpdateAspUisAcademic ,
   getAspUisAcademicByProgramaAcademico,
@@ -98,5 +142,7 @@ module.exports = {
   getAspUisAcademicById,
   getAspUisAcademicByCodigo,
   getAspUisAcademicByPeriodoAcademico,
-  getAspUisAcademicByAnoInscripcion
+  getAspUisAcademicByAnoInscripcion,
+  deleteAspUisAcademic,
+  getAspUisAcademicByEstado
 }

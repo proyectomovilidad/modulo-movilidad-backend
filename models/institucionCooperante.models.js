@@ -36,6 +36,19 @@ const getInstitucionCooperanteById = async (institucionCooperanteId)=> {
   return institucionCooperante
 }
 
+const getInstitucionByTipoMovilidad = async (tipoMovilidadId)=> {
+  const connection = await mongoConnector
+  let aggregate = [  // Array de objetos
+    {
+      $match: { // Reperesenta el select en mongo, los atributos dentro de las llaves son los criterios de busqieda
+        tipo_movilidad: new ObjectId(tipoMovilidadId)
+      }
+    }
+  ]
+  const institucion = await connection.collection('institucionCooperante').aggregate(aggregate).toArray()
+  return institucion
+}
+
 const getInstitucionCooperanteByPais = async (paisId)=> {
   const connection = await mongoConnector
   let aggregate = [  // Array de objetos
@@ -70,5 +83,6 @@ module.exports = {
     getInstitucionCooperante,
     getInstitucionCooperanteById,
     getInstitucionCooperanteByPais,
-    getInstitucionCooperanteByCiudad
+    getInstitucionCooperanteByCiudad,
+    getInstitucionByTipoMovilidad
 }

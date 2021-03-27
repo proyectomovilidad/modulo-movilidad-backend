@@ -39,6 +39,17 @@ const getInstitucionCooperanteById = async (req, res, next) => {
     }
 }
 
+const getInstitucionByTipoMovilidad = async (req, res, next) => {
+  try { 
+    const tipoMovilidadId = req.params['_id']
+    console.log("id", tipoMovilidadId)
+      const institucion = await model.getInstitucionByTipoMovilidad(tipoMovilidadId)
+      res.send(institucion)
+    } catch (e) {
+      errorUtils.sendErrorResponse(res, e)
+    }
+}
+
 const getInstitucionCooperanteByPais = async (req, res, next) => {
   try { 
     const paisId = req.params['_id']
@@ -64,6 +75,7 @@ module.exports = {
     getInstitucionCooperante,
     getInstitucionCooperanteById,
     getInstitucionCooperanteByPais,
-    getInstitucionCooperanteByCiudad
+    getInstitucionCooperanteByCiudad,
+    getInstitucionByTipoMovilidad
    
 }

@@ -1,5 +1,8 @@
 const model = require("./../models/aspExtPersonal.models")
+const modelUsuario = require("./../models/usuarios.models")
 const validator = require('./../validators/aspExtPersonal.validators')
+const errorUtils = require("./../shared/error.shared")
+
 
 
 
@@ -13,8 +16,13 @@ const saveOrUpdateAspExtPersonal = async (req, res, next) => {
         if (!id) validator.validateAspExtPersonal(req.body)
         validator.transformObjectId(req.body)
        const aspExtPersonal = await model.saveOrUpdateAspExtPersonal(id, req.body)
-
-        res.send(aspExtPersonal)
+       const usuario = await modelUsuario.saveOrUpdateUsuario(req.body.correo, {correo: req.body.correo,
+        contrasena: req.body.documento_id, rol: 3}) 
+         
+        res.send({
+          model: aspExtPersonal,
+          status: true
+        })
       } catch (e) {
         console.log(e);
       }
@@ -50,12 +58,33 @@ const getAspExtPersonalByDocumentoId = async (req, res, next) => {
     }
 }
 
+const getAspirantesExtPersonal = async (req, res, next) => {
+  try { 
+      const aspExtPersonal = await model.getAspirantesExtPersonal()
+      res.send(aspExtPersonal)
+    } catch (e) {
+      errorUtils.sendErrorResponse(res, e)
+    }
+}
+
+
+const consultarExternos = async (req, res, next) => {
+  try {
+      
+     const aspExtPersonal = await model.consultarExternos(req.body)
+      res.send(aspExtPersonal)
+    } catch (e) {
+      console.log(e);
+    }
+} 
 
 
 module.exports = {
     saveOrUpdateAspExtPersonal,
     getAspExtPersonal,
     getAspExtPersonalById,
-    getAspExtPersonalByDocumentoId
+    getAspExtPersonalByDocumentoId,
+    getAspirantesExtPersonal,
+    consultarExternos
    
 }

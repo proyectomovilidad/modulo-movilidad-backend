@@ -1,17 +1,14 @@
 const validator = require('./generic.validators')
 
 const validateInscripcion = (user) => {
-  const properties = ['fecha_inscripcion', 'programa_acad', 'semestre', 
-  'codigo_convenio', 'tipo_estado', 'tipo_movilidad', 'institucion_cooperante' ]
+  const properties = [ 'tipo_movilidad', 'nombre_institucion']
   validator.validateProperties(user, properties)
 }
 
 const transformObjectId = (padlock) => {
-  validator.validateAndTransformId(padlock, 'programa_acad', 'El id del tipo del programa académico no es valido')
-  validator.validateAndTransformId(padlock, 'codigo_convenio', 'El id del convenio  no es valido')
-  validator.validateAndTransformId(padlock, 'tipo_estado', 'El id del tipo de estado  no es valido')
+  validator.validateAndTransformId(padlock, 'nombre_institucion', 'El id del nombre de la institución  no es valido')
   validator.validateAndTransformId(padlock, 'tipo_movilidad', 'El id del tipo de movilidad  no es valido')
-  validator.validateAndTransformId(padlock, 'institucion_cooperante', 'El id de la institución cooperante no es valido')
+  //validator.validateAndTransformId(padlock, 'nombre_convenio', 'El id del nombre del convenio  no es valido')
 
 }
 

@@ -9,6 +9,7 @@ router.get('/getAspExtAcademicByInstitucionCooperanteId/:_id', controller.getAsp
 router.get('/getAspExtAcademicByAnoInscripcion/:_id', controller.getAspExtAcademicByAnoInscripcion)
 router.get('/getAspExtAcademicByPeriodoAcademicoById/:_id', controller.getAspExtAcademicByPeriodoAcademico)
 router.get('/getAspExtAcademicByProgramaAcademicoUisById/:_id', controller.getAspExtAcademicByProgramaAcademicoUis)
+router.delete('/deleteAspiranteExtAcademicById/:_id', controller.deleteAspExtAcademicById) 
 router.post('/', controller.saveOrUpdateAspExtAcademic)
 router.post('/:_id', controller.saveOrUpdateAspExtAcademic)
 

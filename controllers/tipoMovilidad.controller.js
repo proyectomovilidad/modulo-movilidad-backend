@@ -29,11 +29,23 @@ const getTipoMovilidad = async (req, res, next) => {
     }
 }
 
+const getMovilidadById = async (req, res, next) => {
+  try { 
+    const movilidadId = req.params['id']
+      const movilidad = await model.getMovilidadById(movilidadId)
+      res.send(movilidad)
+    } catch (e) {
+     // errorUtils.sendErrorResponse(res, e)  
+    
+    }
+}
+
 
 
 module.exports = {
     saveOrUpdateTipoMovilidad,
     getTipoMovilidad,
+    getMovilidadById
    
    
 }

@@ -2,11 +2,14 @@ const validator = require('./generic.validators')
 
 const validateAspUisPersonal = (user) => {
   const properties = ['primer_nombre', 'primer_apellido', 'tipo_doc_id', 'documento_id' , 'celular', 'correo', 
-  , 'genero', 'fecha_nacimiento', 'pais_nacimiento','departamento', 'ciudad', 'direccion','estrato','codigo_est' ]
+ 'genero', 'fecha_nacimiento', 'pais_nacimiento','departamento', 'ciudad', 'direccion','estrato','codigo_est' ]
   validator.validateProperties(user, properties)
 }
 
 const transformObjectId = (padlock) => {
+
+  validator.validateAndTransformId(padlock, 'tipo_doc_id', 'El id del tipo de documento no es valido')
+
   /*
   validator.validateAndTransformId(padlock, 'ciudad', 'El id de la ciudad no es valido')
   validator.validateAndTransformId(padlock, 'departamento', 'El id del departamento no es valido')
