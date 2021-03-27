@@ -9,7 +9,6 @@ router.get('/getInscripcionByTipoEstadoId/:_id', controller.getInscripcionByTipo
 router.get('/getInscripcionBySedeId/:_id', controller.getInscripcionBySede)
 router.get('/getInscripcionByInstitucionCooperanteId/:_id', controller.getInscripcionByInstitucionCooperante)
 router.get('/getInscripcionByConvenioId/:_id', controller.getInscripcionByConvenio)
-router.get('/getInscripcionByProgramaAcademicoId/:_id', controller.getInscripcionByProgramaAcademico) 
 router.post('/', controller.saveOrUpdateInscripcion)
 router.post('/:_id', controller.saveOrUpdateInscripcion)
 

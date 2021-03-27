@@ -1,7 +1,7 @@
 const model = require("./../models/aspExtAcademic.models")
+const modelPersonal = require("./../models/aspExtPersonal.models")
+const modelInscripcion = require("./../models/inscripcion.models")
 const validator = require('./../validators/aspExtAcademic.validators')
-
-
 
 
 /**
@@ -15,7 +15,10 @@ const saveOrUpdateAspExtAcademic = async (req, res, next) => {
         validator.transformObjectId(req.body)
        const aspExtAcademic = await model.saveOrUpdateAspExtAcademic(id, req.body)
 
-        res.send(aspExtAcademic)
+        res.send({
+          model:aspExtAcademic,
+          status: true
+        })
       } catch (e) {
         console.log(e);
       }
@@ -81,14 +84,21 @@ const getAspExtAcademicByProgramaAcademicoUis = async (req, res, next) => {
     }
 }
 
+const deleteAspExtAcademicById  = async (req, res, next) =>{
+  try { 
+    const id = req.params['_id']
+     const aspExtAcademic = await model.deleteAspExtAcademicById(id)
+      const aspExtPersonal = await modelPersonal.deleteAspExtPersonalByDocument(id)
+      const inscripcion = await modelInscripcion.deleteAspExtInscripcionByDocument(id)
 
+      res.send(aspExtAcademic)
+    } catch (e) {
+     // errorUtils.sendErrorResponse(res, e)
+     console.log(e)
+     res.send(aspExtAcademic)
 
-
-
-
-
-
-
+    }
+}
 
 
 module.exports = {
@@ -98,6 +108,7 @@ module.exports = {
     getAspExtAcademicByInstitucionCooperante,
     getAspExtAcademicByAnoInscripcion,
     getAspExtAcademicByPeriodoAcademico,
+    deleteAspExtAcademicById,
     getAspExtAcademicByProgramaAcademicoUis
     
    

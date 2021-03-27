@@ -1,5 +1,6 @@
 const model = require("./../models/convenio.models")
 const validator = require('./../validators/convenio.validators')
+const errorUtils = require("./../shared/error.shared")
 
 
 
@@ -40,13 +41,74 @@ const getConvenioById = async (req, res, next) => {
     }
 }
 
+const getConvenioByTipoMovilidad = async (req, res, next) => {
+  try { 
+    const tipoMovilidadId = req.params['_id']
+    console.log("id", tipoMovilidadId)
+      const convenio = await model.getConvenioByTipoMovilidad(tipoMovilidadId)
+      res.send(convenio)
+    } catch (e) {
+      errorUtils.sendErrorResponse(res, e)
+    }
+}
+
+const getConvenioByInstitucion = async (req, res, next) => {
+  try { 
+    const institucion = req.params['_id']
+    console.log("id", institucion)
+      const convenio = await model.getConvenioByInstitucion(institucion)
+      res.send(convenio)
+    } catch (e) {
+      errorUtils.sendErrorResponse(res, e)
+    }
+}
+
+
+const deleteConvenio  = async (req, res, next) =>{
+  try { 
+    const id = req.params['_id']
+     const convenio = await model.deleteConvenio(id)
+     
+      res.send(convenio)
+    } catch (e) {
+     // errorUtils.sendErrorResponse(res, e)
+     console.log(e)
+     res.send(convenio)
+
+    }
+}
+
+const getConveniosConsulta = async (req, res, next) => {
+  try { 
+      const convenio = await model.getConveniosConsulta()
+      res.send(convenio)
+    } catch (e) {
+      errorUtils.sendErrorResponse(res, e)
+    }
+}
+
+const consultarConvenios = async (req, res, next) => {
+  try {
+      
+     const convenios = await model.consultarConvenios(req.body)
+
+      res.send(convenios)
+    } catch (e) {
+      console.log(e);
+    }
+} 
 
 
 
 module.exports = {
     saveOrUpdateConvenio,
     getConvenio,
-    getConvenioById
+    getConvenioById,
+    deleteConvenio,
+    getConvenioByTipoMovilidad,
+    getConvenioByInstitucion,
+    getConveniosConsulta,
+    consultarConvenios
    
 }
     

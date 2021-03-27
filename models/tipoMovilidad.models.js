@@ -23,8 +23,22 @@
    const tipoMovilidad = await connection.collection('tipoMovilidad').find({}).toArray() // Devuelve la respuesta como un array de objetos
    return tipoMovilidad
  }
+
+ const getMovilidadById = async (movilidadId)=> {
+  const connection = await mongoConnector
+  let aggregate = [  // Array de objetos
+    {
+      $match: { // Reperesenta el select en mongo, los atributos dentro de las llaves son los criterios de busqieda
+        _id: new ObjectId(movilidadId)
+      }
+    }
+  ]
+  const movilidad  = await connection.collection('tipoMovilidad').aggregate(aggregate)
+  return movilidad
+}
  
  module.exports = {
     saveOrUpdateTipoMovilidad,
-    getTipoMovilidad
+    getTipoMovilidad,
+    getMovilidadById
  }

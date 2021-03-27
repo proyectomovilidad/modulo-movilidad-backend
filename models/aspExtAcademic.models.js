@@ -2,29 +2,42 @@ const { ObjectId } = require('mongodb')
 const mongoConnector = require('../bd/mongo.db')
 
 
-const saveOrUpdateAspExtAcademic  = async (aspExtAcademicId, aspExtAcademicBody) => {
+const saveOrUpdateAspExtAcademic = async (aspExtAcademicId, aspExtAcademicBody) => {
   const connection = await mongoConnector
   delete aspExtAcademicBody._id
-  const aspExtAcademic = await connection.collection('aspExtAcademic').findOneAndUpdate({
-    _id: new ObjectId(aspExtAcademicId)
-  }, {
-    $set: aspExtAcademicBody
-  }, {
-    upsert: true,
-    returnOriginal: false
-  })
-  return aspExtAcademic.value
+  const valid = await getValidarAspirantes(aspExtAcademicBody.documento_id)
+  console.log(valid)
+  if ((valid === 0 && !aspExtAcademicId) || (aspExtAcademicId)) {
+    if ((valid === 0 && !aspExtAcademicId)) {aspExtAcademicBody.estado= "1"; } 
+    const aspExtAcademic = await connection.collection('aspExtAcademic').findOneAndUpdate({
+      _id: new ObjectId(aspExtAcademicId)
+    }, {
+      $set: aspExtAcademicBody
+    }, {
+      upsert: true,
+      returnOriginal: false
+    })
+    return aspExtAcademic.value
+  }
+  return {}
+}
+
+const getValidarAspirantes = async (documento_id) => {
+  const connection = await mongoConnector
+  const aspExtAcademic = await connection.collection('aspExtAcademic').find({ documento_id: documento_id }).count()
+  return aspExtAcademic
+
 }
 
 
-const getAspExtAcademic= async ()=> {
+const getAspExtAcademic = async () => {
   const connection = await mongoConnector
- 
+
   const aspExtAcademic = await connection.collection('aspExtAcademic').find({}).toArray() // Devuelve la respuesta como un array de objetos
   return aspExtAcademic
 }
 
-const getAspExtAcademicById = async (Id)=> {
+const getAspExtAcademicById = async (Id) => {
   const connection = await mongoConnector
   let aggregate = [  // Array de objetos
     {
@@ -38,12 +51,12 @@ const getAspExtAcademicById = async (Id)=> {
 }
 
 
-const getAspExtAcademicByAnoInscripcion = async (anoInscripcion)=> {
+const getAspExtAcademicByAnoInscripcion = async (anoInscripcion) => {
   const connection = await mongoConnector
-  let aggregate = [  
+  let aggregate = [
     {
       $match: {
-        ano_inscrip: String (anoInscripcion)
+        ano_inscrip: String(anoInscripcion)
       }
     }
   ]
@@ -51,7 +64,7 @@ const getAspExtAcademicByAnoInscripcion = async (anoInscripcion)=> {
   return aspExtAcademic
 }
 
-const getAspExtAcademicByPeriodoAcademico = async (periodoAcademicoId)=> {
+const getAspExtAcademicByPeriodoAcademico = async (periodoAcademicoId) => {
   const connection = await mongoConnector
   let aggregate = [  // Array de objetos
     {
@@ -64,7 +77,7 @@ const getAspExtAcademicByPeriodoAcademico = async (periodoAcademicoId)=> {
   return aspExtAcademic
 }
 
-const getAspExtAcademicByInstitucionCooperante = async (institucionCooperanteId)=> {
+const getAspExtAcademicByInstitucionCooperante = async (institucionCooperanteId) => {
   const connection = await mongoConnector
   let aggregate = [  // Array de objetos
     {
@@ -77,7 +90,7 @@ const getAspExtAcademicByInstitucionCooperante = async (institucionCooperanteId)
   return aspExtAcademic
 }
 
-const getAspExtAcademicByProgramaAcademicoUis = async (programaAcademicoId)=> {
+const getAspExtAcademicByProgramaAcademicoUis = async (programaAcademicoId) => {
   const connection = await mongoConnector
   let aggregate = [  // Array de objetos
     {
@@ -90,16 +103,49 @@ const getAspExtAcademicByProgramaAcademicoUis = async (programaAcademicoId)=> {
   return aspExtAcademic
 }
 
+const getAspExtAcademicByEstado = async (documento_id)=> {
+  const connection = await mongoConnector
+  let aggregate = [  // Array de objetos
+    {
+      $match: { // Reperesenta el select en mongo, los atributos dentro de las llaves son los criterios de busqieda
+        documento_id:  String(documento_id), estado: "1"
+
+      }
+    }
+  ]
+  const aspExtAcademic = await connection.collection('aspExtAcademic').aggregate(aggregate).toArray()
+  return aspExtAcademic
+}
+
+const deleteAspExtAcademicById = async (_id) => {
+  const connection = await mongoConnector
+  try {
+    const aspExtAcademic = await connection.collection('aspExtAcademic').findOneAndDelete({ documento_id: _id })
+
+    if (aspExtAcademic.ok === 1) {
+      return { message: "El documento fue eliminado", status: true };
+    } else {
+      return { message: "El documento no ha sido eliminado", status: false };
+
+    }
+  }
+  catch (e) {
+    return { message: e, status: false };
+  }
+
+}
 
 
 
 module.exports = {
-  saveOrUpdateAspExtAcademic, 
+  saveOrUpdateAspExtAcademic,
   getAspExtAcademic,
   getAspExtAcademicById,
   getAspExtAcademicByInstitucionCooperante,
   getAspExtAcademicByAnoInscripcion,
   getAspExtAcademicByPeriodoAcademico,
-  getAspExtAcademicByProgramaAcademicoUis
+  getAspExtAcademicByProgramaAcademicoUis,
+  deleteAspExtAcademicById,
+  getAspExtAcademicByEstado
 }
 

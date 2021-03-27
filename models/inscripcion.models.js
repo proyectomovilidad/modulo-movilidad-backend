@@ -5,6 +5,9 @@ const mongoConnector = require('../bd/mongo.db')
 const saveOrUpdateInscripcion = async (inscripcionId, inscripcionBody) => {
   const connection = await mongoConnector
   delete inscripcionBody._id
+  const valid = await getValidarAspirantes(inscripcionBody.codigo_est, inscripcionBody.documento_id)
+  console.log(valid)
+  if ((valid === 0 && !inscripcionId) || (inscripcionId) ) {
   const inscripcion = await connection.collection('inscripcion').findOneAndUpdate({
     _id: new ObjectId(inscripcionId)
   }, {
@@ -15,11 +18,21 @@ const saveOrUpdateInscripcion = async (inscripcionId, inscripcionBody) => {
   })
   return inscripcion.value
 }
+  return {}
+}
+
+const getValidarAspirantes = async (codigo_est, documento_id) => {
+  const connection = await mongoConnector
+  const inscripcion = await connection.collection('inscripcion').find({codigo_est: codigo_est, documento_id: documento_id, estado: "1"}).count() 
+return inscripcion
+
+}
 
 const getInscripcion = async ()=> {
   const connection = await mongoConnector
  
   const inscripcion = await connection.collection('inscripcion').find({}).toArray() // Devuelve la respuesta como un array de objetos
+
   return inscripcion
 }
 
@@ -119,8 +132,34 @@ const getInscripcionByProgramaAcademico = async (programaAcademicoId)=> {
   return inscripcion
 }
 
+const deleteAspExtInscripcionByDocument = async (documento_id) => {
+  const connection = await mongoConnector
 
+  const inscripcion = await connection.collection('inscripcion').deleteOne({documento_id: documento_id}, function(err, obj) {
+    if (err) return {message: err, document:null, status:false};
+    return {document: obj.document_id, message: "El documento ha sido eliminado", status: true}
+  });
+  return {message: "Error 500"};
+}
 
+const deleteAspUisInscripcion = async (codigo_est) => {
+  const connection = await mongoConnector
+
+  const inscripcion = await connection.collection('inscripcion').deleteOne({codigo_est: codigo_est}, function(err, obj) {
+    if (err) return {message: err, document:null, status:false};
+    return {document: obj.codigo_est, message: "El documento ha sido eliminado", status: true}
+  });
+  return {message: "Error 500"};
+}
+
+const tiposEstado ={
+  "e1": "Inscrito",
+  "e2": "Aceptado",
+  "e3": "Rechazado",
+  "e4": "Movilidad",
+  "e5": "Cancelado",
+  "e6": "Finalizado",
+}
 
 
 module.exports = {
@@ -132,5 +171,8 @@ module.exports = {
     getInscripcionBySede,
     getInscripcionByInstitucionCooperante,
     getInscripcionByConvenio,
-    getInscripcionByProgramaAcademico
+    getInscripcionByProgramaAcademico,
+    deleteAspExtInscripcionByDocument,
+    deleteAspUisInscripcion
+    
 }
