@@ -4,6 +4,7 @@ const controller = require("../controllers/tipoMovilidad.controller")
 
 router.get('/getTipoMovilidad/', controller.getTipoMovilidad)
 router.get('/getTipoMovilidadById/:id', controller.getMovilidadById)
+router.get('/getTipoMovilidadByInstProgAcad/:instId/:progAcadId', controller.getTipoMovilidadByInstProgAcad)
 router.post('/', controller.saveOrUpdateTipoMovilidad)
 router.post('/:_id', controller.saveOrUpdateTipoMovilidad)
 

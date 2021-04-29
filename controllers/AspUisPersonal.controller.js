@@ -52,9 +52,8 @@ const getAspUisPersonalById = async (req, res, next) => {
 const getAspirantesUisPersonal = async (req, res, next) => {
   try {
     const aspUisPersonal = await model.getAspirantesUisPersonal()
-    console.log("resultado", aspUisPersonal)
-
-    res.send(aspUisPersonal)
+    
+    res.send({estudiantes: aspUisPersonal, status: true})
   } catch (e) {
     errorUtils.sendErrorResponse(res, e)
   }

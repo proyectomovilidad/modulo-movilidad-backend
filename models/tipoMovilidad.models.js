@@ -36,9 +36,38 @@
   const movilidad  = await connection.collection('tipoMovilidad').aggregate(aggregate)
   return movilidad
 }
+
+const getTipoMovilidadByInstProgAcad = async (instId, progAcadId)=>{
+  const connection = await mongoConnector
+  const aggregate = [
+    {
+      $project: {
+        'tipoMovilidad': '$$ROOT'
+      }
+    },
+    {
+      $lookup: {
+        from: 'convenio',
+        localField: 'tipoMovilidad._id',
+        foreignField: 'tipo_movilidad',
+        as: 'Convenios'
+      }
+    },
+    {
+      $match: {
+        'Convenios.nombre_institucion': new ObjectId(instId),
+        'Convenios.programa_acad': new ObjectId(progAcadId),
+        'Convenios.estado_convenio': 'activo'        
+      }
+    }
+  ]
+  const tipoMovilidades = await connection.collection('tipoMovilidad').aggregate(aggregate).toArray()
+  return tipoMovilidades
+}
  
  module.exports = {
     saveOrUpdateTipoMovilidad,
+    getTipoMovilidadByInstProgAcad,
     getTipoMovilidad,
     getMovilidadById
  }

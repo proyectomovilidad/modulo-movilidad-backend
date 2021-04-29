@@ -30,8 +30,15 @@ const getCargaDocumentosByNumeroInscripcion = async (numeroInscripcionId)=> {
   return cargaDocumentos
 }
 
+const getDocumentos = async ()=>{
+  const connection = await mongoConnector
+
+  const documentos = await connection.collection('cargaDocumentos').find().toArray()
+  return documentos
+}
+
 module.exports = {
     saveOrUpdateCargaDocumentos,
-    getCargaDocumentosByNumeroInscripcion
-    
+    getCargaDocumentosByNumeroInscripcion,
+    getDocumentos
 }

@@ -40,10 +40,18 @@ const getMovilidadById = async (req, res, next) => {
     }
 }
 
-
+const getTipoMovilidadByInstProgAcad = async (req, res, next)=>{
+  try{
+    const movilidades = await model.getTipoMovilidadByInstProgAcad(req.params.instId, req.params.progAcadId)
+    res.send(movilidades)
+  }catch(err){
+    res.send({message: err, status: false})
+  }
+}
 
 module.exports = {
     saveOrUpdateTipoMovilidad,
+    getTipoMovilidadByInstProgAcad,
     getTipoMovilidad,
     getMovilidadById
    

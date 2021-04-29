@@ -40,8 +40,22 @@ const getInstitucionByTipoMovilidad = async (tipoMovilidadId)=> {
   const connection = await mongoConnector
   let aggregate = [  // Array de objetos
     {
+      $project: {
+        'institucionCooperante': '$$ROOT'
+      }
+    },
+    {
+      $lookup: {
+        from: 'convenio',
+        localField: 'institucionCooperante._id',
+        foreignField: 'nombre_institucion',
+        as: 'convenios'
+      }
+    },
+    {
       $match: { // Reperesenta el select en mongo, los atributos dentro de las llaves son los criterios de busqieda
-        tipo_movilidad: new ObjectId(tipoMovilidadId)
+        'convenios.tipo_movilidad': new ObjectId(tipoMovilidadId),
+        'convenios.estado_convenio': 'activo'
       }
     }
   ]

@@ -14,7 +14,7 @@ const ciudadRoute = require('./ciudad.routes')
 const departamentoRoute = require('./departamento.routes')
 const paisRoute = require('./pais.routes')
 const tipoMovilidadRoute = require('./tipoMovilidad.routes')
-const tipoEncuestaRoute = require('./tipoencuesta.routes')
+const tipoEncuestaRoute = require('./tipoEncuesta.routes')
 const entidadFinancieraRoute = require('./entidadFinanciera.routes')
 const tipoApoyoRoute = require('./tipoApoyo.routes')
 const tipoDocIdRoute = require('./tipoDocId.routes')
@@ -28,6 +28,7 @@ const tipoConvenioRoute = require('./tipoConvenio.routes')
 const tipoConvocatoriaRoute = require('./convocatoria.routes')
 const tipoProyectoRoute = require('./tipoProyecto.routes')
 const autenticacionRoute = require('./autenticacion.routes')
+const entornoMovilidadRoute = require('./entornoMovilidad.routes')
 
 
 
@@ -63,6 +64,7 @@ const routing = (app) => {
     app.use('/convocatoria', tipoConvocatoriaRoute)
     app.use('/tipoProyecto', tipoProyectoRoute)
     app.use('/autenticacion', autenticacionRoute)
+    app.use('/entornoMovilidad', entornoMovilidadRoute)
 
     
 }

@@ -23,7 +23,38 @@ const getProgramaAcademico = async ()=> {
   return programaAcademico
 }
 
+const getProgramaAcademicosByInstitucion = async(institucionId) =>{
+  const connection = await mongoConnector
+  let aggregate = [  // Array de objetos
+    {
+      $project: {
+        'programaAcademico': '$$ROOT'
+      }
+    },
+    {
+      $lookup: {
+        from: 'convenio',
+        localField: 'programaAcademico._id',
+        foreignField: 'programa_acad',
+        as: 'Convenios'
+      }
+    },
+    {
+      $match: {
+        'Convenios.nombre_institucion': new ObjectId(institucionId),
+        'Convenios.estado_convenio': 'activo'
+      }
+    }
+  ]
+  const programaAcademicos = await connection.collection('programaAcademico').aggregate(aggregate).toArray()
+  console.log('programas: ',programaAcademicos)
+  console.log('institucionID: ', institucionId)
+
+  return programaAcademicos
+}
+
 module.exports = {
     saveOrUpdateProgramaAcademico,
-    getProgramaAcademico
+    getProgramaAcademico,
+    getProgramaAcademicosByInstitucion
 }

@@ -44,9 +44,12 @@ const getInstitucionByTipoMovilidad = async (req, res, next) => {
     const tipoMovilidadId = req.params['_id']
     console.log("id", tipoMovilidadId)
       const institucion = await model.getInstitucionByTipoMovilidad(tipoMovilidadId)
+      console.log('intituciones: ',institucion)
       res.send(institucion)
     } catch (e) {
-      errorUtils.sendErrorResponse(res, e)
+      console.log('error: ',e)
+      res.send({message: e, status: false})
+      // errorUtils.sendErrorResponse(res, e)
     }
 }
 

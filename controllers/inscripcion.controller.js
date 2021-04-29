@@ -2,6 +2,8 @@ const model = require("./../models/inscripcion.models")
 const modelUisAcademic = require("./../models/aspUisAcademic.models")
 const modelConvenio = require("./../models/convenio.models")
 const modelExtAcademic = require("./../models/aspExtAcademic.models")
+const modelAspUisPersonal = require('./../models/aspUisPersonal.models')
+const modelAspExtPersonal = require('./../models/aspExtPersonal.models')
 const validator = require('./../validators/inscripcion.validator')
 const { request } = require("express")
 
@@ -24,8 +26,6 @@ const saveOrUpdateInscripcion = async (req, res, next) => {
       tipoEstudiante.documento_id = req.body.documento_id
     }
     const valido = await validatarInscripcionConvenio(tipoEstudiante, req.body.nombre_convenio)
-    console.log("negación id", !valido)
-    console.log("negación id2", valido)
 
   /*  if (!id && !valido) {
       console.log("no se escribió")
@@ -114,6 +114,65 @@ const getInscripcionByConvenio = async (req, res, next) => {
   }
 }
 
+const getAspirantesExtPersonalAdmitidos = async (req, res, next)=>{
+  try{
+    const estudiantes = modelAspExtPersonal.getAspirantesExtPersonalAdmitidos()
+    res.send(estudiantes)
+
+  }catch(e){
+    res.send({message:e.toString(), status: false})
+  }
+}
+
+const getAspirantesUisPersonalAdmitidos = async (req, res, next)=>{
+  try{
+    const estudiantes = modelAsUisPersonal.getAspirantesUisPersonalAdmitidos()
+    res.send(estudiantes)
+
+  }catch(e){
+    res.send({message:e.toString(), status: false})
+  }
+}
+
+const cambiarEstadoInscripcionById = async (req, res, next)=>{
+  try{    
+    let inscripcion = await model.cambiarEstadoInscripcionById(req.body.estado, req.params._id)
+
+    res.send({inscripcion: inscripcion, status: true})
+  }catch(e){
+    res.send({message: e.toString(), status: false})
+  }
+}
+
+const cambiarEstadoInscripcionAuto = async (req, res, next)=>{
+  try{
+    let convenios = await modelConvenio.getConvenioActivo(new Date())
+
+    convenios.forEach(async element=>{
+        let estudiantes = await modelAsUisPersonal.consultarEstudiantes({
+          'Inscripcion.nombre_convenio': 2
+        })
+        let externos = await modelAspExtPersonal.getAspirantesExtPersonal()
+    })
+
+    const inscripcion = await model.cambiarEstadoInscripcionById(req.params._id)
+
+    res.send({model: inscripcion, status: true})
+  }catch(e){
+    res.send({message: e.toString(), status: false})
+  }
+}
+
+const updateInscripcionStatus = async (req, res, next)=>{
+  try{
+    const inscripcion = await model.updateInscripcionStatus(req.body, req.params._id)
+    res.send({inscripcion: inscripcion, status: true})
+
+  }catch(e){
+    res.send({message: e.toString(), status: false})
+  }
+}
+
 const validatarInscripcionConvenio = async (tipoEstudiante, nombre_convenio) => {
 
   // try {
@@ -122,19 +181,23 @@ const validatarInscripcionConvenio = async (tipoEstudiante, nombre_convenio) => 
     const datosAcademicos = await modelUisAcademic.getAspUisAcademicByEstado(tipoEstudiante.codigo_est)
 
     const convenios = await modelConvenio.getConvenioById(nombre_convenio)
-    console.log("primera validacion", Number(datosAcademicos[0].promedio) >= Number(convenios[0].promedio))
-    console.log("segunda validacion", Number(datosAcademicos[0].cred_cursados) >= Number(convenios[0].cred_cursados))
-    console.log("tercera", Number(datosAcademicos[0].cred_cursar) >= Number(convenios[0].cred_cursar))
+    console.log('convenioProm: ',convenios[0].promedio, ' credCursar: ',convenios[0].cred_cursar)
+    console.log('estudiante prom: ',datosAcademicos[0].promedio, ' cred: ', datosAcademicos[0].cred_cursar)
+    console.log('valid: ',Number(datosAcademicos[0].promedio) >= Number(convenios[0].promedio))
+    console.log('valid2: ', Number(datosAcademicos[0].cred_cursar) >= Number(convenios[0].cred_cursar) )
+
     if (Number(datosAcademicos[0].promedio) >= Number(convenios[0].promedio) && Number(datosAcademicos[0].cred_cursados) >= Number(convenios[0].cred_cursados) && Number(datosAcademicos[0].cred_cursar) >= Number(convenios[0].cred_cursar)) {
-      console.log("Prueba 2")
+      const inscripciones = await model.getInscripcionByEstudiante({codigo_est: tipoEstudiante.codigo_est, estado: '3'})
+      const estadoInscripcion = inscripciones.length > 0 ? '5' : '1'
+      
       return {
         status: true,
-        estado: "1"
+        estado: estadoInscripcion
       }
     } else {
       return {
         status: false,
-        estado: "0"
+        estado: "-1"
       }
     }
 
@@ -143,17 +206,18 @@ const validatarInscripcionConvenio = async (tipoEstudiante, nombre_convenio) => 
     const datosAcademicos = await modelExtAcademic.getAspExtAcademicByEstado(tipoEstudiante.documento_id)
     const convenios = await modelConvenio.getConvenioById(nombre_convenio)
 
-    console.log("datos academico", datosAcademicos)
-    console.log("tipoEstudiante", tipoEstudiante.documento_id)
     if (Number(datosAcademicos[0].promedio) >= Number(convenios[0].promedio) && Number(datosAcademicos[0].cred_cursados) >= Number(convenios[0].cred_cursados) && Number(datosAcademicos[0].cred_cursar) >= Number(convenios[0].cred_cursar)) {
+      const inscripciones = await model.getInscripcionByEstudiante({documento_id: tipoEstudiante.documento_id, estado: '3'})
+      const estadoInscripcion = inscripciones.length > 0 ? '5' : '1'
+
       return {
         status: true,
-        estado: "1"
+        estado: estadoInscripcion
       }
     } else {
       return {
         status: false,
-        estado: "0"
+        estado: "-1"
       };
     }
   }
@@ -166,6 +230,7 @@ const validatarInscripcionConvenio = async (tipoEstudiante, nombre_convenio) => 
 
 
 
+
 module.exports = {
   saveOrUpdateInscripcion,
   getInscripcion,
@@ -175,8 +240,7 @@ module.exports = {
   getInscripcionBySede,
   getInscripcionByInstitucionCooperante,
   getInscripcionByConvenio,
-
-
-
-
+  getAspirantesUisPersonalAdmitidos,
+  getAspirantesExtPersonalAdmitidos,
+  cambiarEstadoInscripcionById
 }

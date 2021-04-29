@@ -47,33 +47,50 @@ function decodificar(token) {
 const inicioSesion = async (req, res, next) => {
     try {
         const usuarios = await modelUsuario.getUsuarioByCorreo(req.body.usuario);
-        if (usuarios.lenght == 0) {
+
+        if (usuarios.length == 0) {
             return res.send({
                 status: false, message: "El usuario no esta registrado en la base de datos"
             })
         }
-        if (req.body.contrasena == usuarios[0].contrasena) {
 
+        if (req.body.contrasena == usuarios[0].contrasena) {
+            
             //const bcrypt = require('bcrypt')
-            if (req.rol == "estudianteUis") {
-                datos = modelAspUis.getAspUisPersonalByCorreo(req.body.usuario);
+            if (req.body.rol == "estudianteUis") {
+              let datos = await modelAspUis.getAspUisPersonalByCorreo(req.body.usuario);
+              
+              return res.send({
+                  message: "Inicio de sesión correctamente",
+                  status: true,
+                  token: crearToken(usuarios[0], `${datos._id}`),
+                  usuario: datos
+              })
             }
 
-            if (req.rol == "estudianteExt") {
-                datos = modelAspExt.getAspExtPersonalByCorreo(req.body.usuario);
+            if (req.body.rol == "estudianteExt") {
+              let datos = await  modelAspExt.getAspExtPersonalByCorreo(req.body.usuario);
+              
+              return res.send({
+                  message: "Inicio de sesión correctamente",
+                  status: true,
+                  token: crearToken(usuarios[0], `${datos._id}`),
+                  usuario: datos
+              })
             }
 
             if (req.body.rol == "profesor") {
-                const datos = await modelProfesores.getProfesorByCorreo(req.body.usuario);
-                console.log("usuario", req.body.usuario)
-                console.log("datos", datos._id)
-                return res.send({
-                    message: "Inicio de sesión correctamente",
-                    status: true,
-                    token: crearToken(usuarios[0], `${datos._id}`),
-                    usuario: datos
-                })
+                let datos = await modelProfesores.getProfesorByCorreo(req.body.usuario);
+              
+              return res.send({
+                  message: "Inicio de sesión correctamente",
+                  status: true,
+                  token: crearToken(usuarios[0], `${datos._id}`),
+                  usuario: datos
+              })
             }
+            
+            
 
 
         }
@@ -81,7 +98,8 @@ const inicioSesion = async (req, res, next) => {
             status: false,
             message: "contraseña incorrecta",
             contrasena: req.body.contrasena,
-            base: usuarios[0].contrasena
+            base: usuarios[0].contrasena,
+            correo: usuarios[0].correo
         })
     } catch (e) {
         console.log(e);
@@ -91,91 +109,125 @@ const inicioSesion = async (req, res, next) => {
 // Método para validar que el usuario esta creado en cualquier ruta
 const validacionUsuario = async (req, res, next) => {
     try {
-        if (!req.headers.authorization) return res.send({ message: "El usuario no tiene permiso" });  //Si realiza la petición sin una autorización
 
-        const token = req.headers.authorization.split(' ')[1]
+        if (!req.headers.authorization) return res.send({ message: "El usuario no tiene permiso", status: false });  //Si realiza la petición sin una autorización
+        
+        const token = req.headers.authorization.split(' ').pop()
         decodificar(token).then(res => {
             next()
         }).catch(reject => {
-            res.send(reject)
+            res.send({message: reject, status: false})
         })
 
     } catch (e) {
-        res.send(e)
+        res.send({message: e.toString(), status: false})
     }
 }
 
 const controlRutas = async (req, res, next) => {
-    try {
-        const token = req.headers.authorization.split(' ')[1]
+  try {
+    const token = req.headers.authorization.split(' ').pop()
+    decodificar(token).then(resp => {
+      if (resp.rol == 1) {
+        return next()
+      }
 
-        decodificar(token).then(res => {
-            if (res.rol == 1) {
-                return next()
-            }
+      if (validarRuta(req.method, req.url, req.baseUrl, resp.payload)) {
+        return next()
+      }
 
-            if (validarRuta(req.method, req.url, req.baseUrl, res.payload)) {
+      return  res.send({
+        status: false,
+        message: "Este rol no tiene permiso",
+        permiso: false
+      })
+    }).catch(reject => {
+      return res.send({message: reject.toString(), satus: false})
+    })
 
-                return next()
-            }
-
-            return  res.send({
-                status: false,
-                message: "Este rol no tiene permiso"
-            })
-        }).catch(reject => {
-           return res.send(reject)
-        })
-
-    } catch (e) {
-        return  res.send({
-            status: false,
-            message: e
-        })
-    }
+  } catch (e) {
+    return  res.send({
+      status: false,
+      message: e.toString()
+    })
+  }
 }
 
 const validarRuta = (metodo, url, baseUrl, usuario) => {
-    if (metodo == "PUT") { //Editar
-        if (eval(`permisos.r${usuario.rol}.${baseUrl.replace(new RegExp("/", "g"), "")}.permisos.includes('/')` && usuario._id == url.split("/")[1])) {
-//  eval -> convierte un strign en un código ejecutable
-            return true;
-        }
-
-    } else if (metodo == "POST") { // save
-        if (eval(`permisos.r${usuario.rol}.${baseUrl.replace(new RegExp("/", "g"), "")}.permisos.includes('${url}')`)) {
-
-            return true;
-
-        }
-
-
-    } else if (metodo == "GET") { // visualizar
-
-        if (eval(`permisos.r${usuario.rol}.${baseUrl.replace(new RegExp("/", "g"), "")}.permisos.includes('/${url.split("/")[1]}/:_id')`)) {
-            if (usuario._id == url.split("/")[2]) {
-                return true;
-            }
-
-        } else if (eval(`permisos.r${usuario.rol}.${baseUrl.replace(new RegExp("/", "g"), "")}.permisos.includes('${url}')`)) {
-            return true;
-        }
-
-
+  let permiso =  `permisos.r${usuario.rol}.${baseUrl.replace(new RegExp("/", "g"), "")}`
+  
+  if(!eval(`${permiso}`)){
+    return false;
+  }
+  //  eval -> convierte un strign en un código ejecutable
+  if(metodo == 'PUT'){ //update
+    if (eval(`${permiso}.permisos.includes('/:_id')`) && usuario._id == url.split("/")[1]) {
+      return true;
     }
-    return false
-
-
+  } 
+  else if (metodo == "POST") { // save or update
+    if (eval(`${permiso}.permisos.includes('/:_id')`) && usuario._id == url.split("/")[1]) {
+      return true;
+    }
+    if (eval(`${permiso}.permisos.includes('${url}')`)) {
+        return true;
+    }
+  } 
+  else if (metodo == "GET") { // visualizar
+    if (eval(`${permiso}.permisos.includes('/${url.split("/")[1]}/:_id')`)) {
+      if (usuario._id == url.split("/")[2]) {
+        return true;
+      }
+    } else if (eval(`${permiso}.permisos.includes('${url}')`)) {
+      return true;
+    }
+  }
+  return false
 }
 
 /*
 Editar: put, visualizar: get, delete: eliminar, post: save
+  admin: 1
+  estudiante: 2
+  estudianteexterno: 3
+  profesor: 4
+  profesionalRelExt:5
 */
+
 const permisos = {
-    "r1": [true],
-    "r2": { "aspUisPersonal": { permisos: ["put", "get"] }, convenios: { permisos: ["visualizar", "consultar"] } },
-    "r3": { "aspExtPersonal": { permisos: ["editar", "visualizar", "consultar"] } },
-    "r4": { "profesores": { permisos: ["/", "/getProfesoresConsulta/", "/getProfesoresById/:_id"] }, "convocatorias": { permisos: ["consultar"] } }
+  "r1": [true],
+  "r2": { 
+    "aspUisPersonal": { permisos: ["/:id", '/'] },
+    "aspUisAcademic": { permisos: ["/:id", '/'] },
+    'cargaDocumentos': {permisos: ['/saveDocumentoFile/']},
+    'inscripcion': {permisos: ['/']}
+  },
+  "r3": { 
+    "aspExtPersonal": { permisos: ["/:id",'/'] },
+    "aspExtAcademic": { permisos: ["/:id",'/'] },
+    'cargaDocumentos': {permisos: ['/saveDocumentoFile/']},
+    'inscripcion': {permisos: ['/']}
+  },
+  "r4": { 
+    "profesores": { 
+      permisos: ["/",'/getProfesores/', "/getProfesoresConsulta/", "/getProfesoresById/:_id",
+        '/getProfesoresByDocumentoId/:_id', '/consultarProfesores/'
+      ] 
+    },
+    "convocatorias": { permisos: ["/getConvocatorias/", "/getConvocatoriaById/:_id"] } 
+  },
+  "r5": {
+    'cargaDocumentos': {
+      permisos: ['/getDocumentosByNombre/:fileName', '/', '/eliminarDocumentoByNombre/:fileName']
+    },
+    'entornoMovilidad': {permisos: ['/','/:_id', '/getFechas/', '/getFechasByStatus/']} ,
+    'aspExtAcademic': {permisos:[ '/:_id',
+      '/getAspiranteExtAcademic/', '/getAspExtAcademicById/:_id', '/getAspExtAcademicByInstitucionCooperanteId/:_id',
+      '/getAspExtAcademicByAnoInscripcion/:_id', '/getAspExtAcademicByPeriodoAcademicoById/:_id',
+      '/getAspExtAcademicByProgramaAcademicoUisById/:_id', '/deleteAspiranteExtAcademicById/:_id'
+    ]}   
+  }
+
 
 }
 module.exports = {

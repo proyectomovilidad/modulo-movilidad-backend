@@ -3,8 +3,8 @@ let db = null
 
 _connect = async() => {
     try {
-        const url = "mongodb://localhost:27017/relext?authSource=admin&retryWrites=true&w=majority"
-        //const url = "mongodb+srv://movilidad:movilidad07@cluster0.l4cd6.mongodb.net/relext?retryWrites=true&w=majority"
+        //const url = "mongodb://localhost:27017/relext?authSource=admin&retryWrites=true&w=majority"
+        const url = "mongodb+srv://movilidad:movilidad07@cluster0.l4cd6.mongodb.net/relext?retryWrites=true&w=majority"
         console.log(url)
         db = await MongoClient.connect(url, { useUnifiedTopology: true, useNewUrlParser: true, poolSize: 10 })
         return db.db()

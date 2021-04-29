@@ -152,6 +152,30 @@ const deleteAspUisInscripcion = async (codigo_est) => {
   return {message: "Error 500"};
 }
 
+
+
+const cambiarEstadoInscripcionById = async (estado, _id)=>{
+  const connection = await mongoConnector
+ 
+  const inscripcion = await connection.collection('inscripcion').findOneAndUpdate({
+    _id: new ObjectId(_id)
+  }, {
+    $set: {estado: estado}
+  }, {
+    upsert: true,
+    returnOriginal: false
+  })
+  return inscripcion.value
+ }
+
+const getInscripcionByEstudiante = async (consulta)=>{
+  const connection = await mongoConnector
+  const inscripciones = await connection.collection('inscripcion').find(consulta).toArray()
+
+  return inscripciones
+
+}
+
 const tiposEstado ={
   "e1": "Inscrito",
   "e2": "Aceptado",
@@ -173,6 +197,8 @@ module.exports = {
     getInscripcionByConvenio,
     getInscripcionByProgramaAcademico,
     deleteAspExtInscripcionByDocument,
-    deleteAspUisInscripcion
+    deleteAspUisInscripcion,
+    cambiarEstadoInscripcionById,
+    getInscripcionByEstudiante
     
 }

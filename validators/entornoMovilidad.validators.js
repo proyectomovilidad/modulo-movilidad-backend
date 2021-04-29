@@ -1,7 +1,7 @@
 const validator = require('./generic.validators')
 
 const validateEntornoMovilidad = (user) => { 
-  const properties = []
+  const properties = ["periodo", "tipo", "fecha_inicio", "fecha_final"]
   validator.validateProperties(user, properties)
 }
 

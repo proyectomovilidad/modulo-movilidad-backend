@@ -125,9 +125,7 @@ const getAspirantesUisPersonal = async () => {
   ]
   const aspUisPersonal = await connection.collection('aspUisPersonal').aggregate(aggregate).toArray()
   aspUisPersonal.forEach(element => {
-    element.Inscripcion.estado = eval(`enviroment.tiposEstado.e${element.Inscripcion.estado}`
-    )
-
+    element.Inscripcion.estado = eval(`enviroment.tiposEstado.e${element.Inscripcion.estado}`)    
   });
   return aspUisPersonal
 }
@@ -215,10 +213,11 @@ const consultarEstudiantes = async (consulta) => {
     }
   ]
   const aspUisPersonal = await connection.collection('aspUisPersonal').aggregate(aggregate).toArray()
-  console.log("consulta", transformarConsulta(consulta))
+  
 
   aspUisPersonal.forEach(element => {
-    element.Inscripcion.estado = eval(`enviroment.tiposEstado.e${element.Inscripcion.estado}`)
+    element.Inscripcion.estado = eval(`enviroment.tiposEstado.'e${element.Inscripcion.estado}'`)
+  
   });
   return aspUisPersonal
 
@@ -231,10 +230,65 @@ const getAspUisPersonalByCorreo = async (correo) => {
       $match: {
         correo: correo
       }
+    },
+    {
+      $lookup: {
+        from: 'inscripcion',
+        localField: 'aspUispersonal.codigo_est',
+        foreignField: 'codigo_est',
+        as: 'Inscripcion'
+      }
+    }, {
+      $unwind: {
+        path: '$Inscripcion'
+      }
     }
   ]
   const aspUisPersonal = await connection.collection('aspUisPersonal').aggregate(aggregate).toArray()
   return aspUisPersonal[0]
+}
+
+
+const getAspirantesUisPersonalAdmitidos = async () => {
+  const connection = await mongoConnector
+  let aggregate = [  // Array de objetos
+    {
+      $match: { // Reperesenta el select en mongo, los atributos dentro de las llaves son los criterios de busqieda
+        "Inscripcion.admitido": 1
+      }
+    },
+    {
+      $lookup: {
+        from: 'aspUisAcademic',
+        localField: 'codigo_est',
+        foreignField: 'codigo_est',
+        as: 'aspUisAcademic'
+      }
+    }, {
+      $unwind: {
+        path: '$aspUisAcademic'
+      }
+    },
+    {
+      $lookup: {
+        from: 'inscripcion',
+        localField: 'codigo_est',
+        foreignField: 'codigo_est',
+        as: 'Inscripcion'
+      }
+    }, {
+      $unwind: {
+        path: '$Inscripcion'
+      }
+    }
+  ]
+  const aspUisPersonal = await connection.collection('aspUisPersonal').aggregate(aggregate).toArray()
+  aspUisPersonal.forEach(element => {
+    element.Inscripcion.estado = eval(`enviroment.tiposEstado.e${element.Inscripcion.estado}`
+    )
+
+  });
+  return aspUisPersonal
 }
 
 
@@ -246,5 +300,6 @@ module.exports = {
   getAspirantesUisPersonal,
   consultarEstudiantes,
   deleteAspUisPersonal,
-  getAspUisPersonalByCorreo
+  getAspUisPersonalByCorreo,
+  getAspirantesUisPersonalAdmitidos
 }

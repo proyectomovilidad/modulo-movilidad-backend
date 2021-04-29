@@ -66,10 +66,11 @@ const getConvenioByTipoMovilidad = async (tipoMovilidadId) => {
 
 const getConvenioByInstitucion = async (institucion) => {
   const connection = await mongoConnector
-  let aggregate = [  // Array de objetos
+  let aggregate = [  // Array de objetos    
     {
       $match: { // Reperesenta el select en mongo, los atributos dentro de las llaves son los criterios de busqieda
-        codigo_inst: institucion
+        nombre_institucion: new ObjectId(institucion),
+        estado_convenio: 'activo'
       }
     }
   ]
@@ -183,6 +184,21 @@ const deleteConvenio = async (_id) => {
 
   }
 
+  const getConvenioByProgAcadInstTipoMov = async (progAcadId, instId, tipoMovId)=>{
+    const connection = await mongoConnector
+    const aggregate = [{
+      $match: {
+        'nombre_institucion': new ObjectId(instId),
+        'tipo_movilidad': new ObjectId(tipoMovId),
+        'programa_acad': new ObjectId(progAcadId),
+        'estado_convenio': 'activo'
+      }
+    }]
+
+    const convenios = await connection.collection('convenio').aggregate(aggregate).toArray()
+    return convenios
+  }
+
 
 module.exports = {
   saveOrUpdateConvenio,
@@ -192,7 +208,6 @@ module.exports = {
   getConvenioByTipoMovilidad,
   getConvenioByInstitucion,
   getConveniosConsulta,
-  consultarConvenios
-
-
+  consultarConvenios,
+  getConvenioByProgAcadInstTipoMov
 }

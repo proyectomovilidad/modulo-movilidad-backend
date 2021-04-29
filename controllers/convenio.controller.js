@@ -98,17 +98,26 @@ const consultarConvenios = async (req, res, next) => {
     }
 } 
 
+const getConvenioByProgAcadInstTipoMov = async (req, res, next)=>{
+  try{
+    const params = req.params
+    const convenios = await model.getConvenioByProgAcadInstTipoMov(params.progAcadId, params.instId, params.tipoMovId)
 
+    res.send(convenios)
+  }catch(e){
+    res.send({message: e, status: false})
+  }
+}
 
 module.exports = {
-    saveOrUpdateConvenio,
-    getConvenio,
-    getConvenioById,
-    deleteConvenio,
-    getConvenioByTipoMovilidad,
-    getConvenioByInstitucion,
-    getConveniosConsulta,
-    consultarConvenios
-   
+  saveOrUpdateConvenio,
+  getConvenio,
+  getConvenioById,
+  deleteConvenio,
+  getConvenioByTipoMovilidad,
+  getConvenioByInstitucion,
+  getConveniosConsulta,
+  consultarConvenios,  
+  getConvenioByProgAcadInstTipoMov   
 }
     

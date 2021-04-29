@@ -100,6 +100,7 @@ const deleteAspExtPersonalByDocument = async (documento_id) => {
 }
 
 
+
 const getAspirantesExtPersonal = async () => {
   const connection = await mongoConnector
   let aggregate = [  // Array de objetos
@@ -224,7 +225,7 @@ const consultarExternos = async (consulta) => {
     }
   ]
   const aspExtPersonal = await connection.collection('aspExtPersonal').aggregate(aggregate).toArray()
-  console.log("resultado ", aspExtPersonal)
+  console.log("resultado ", transformarConsulta(consulta))
   return aspExtPersonal
 
 } 
@@ -235,11 +236,71 @@ const getAspExtPersonalByCorreo = async (correo) => {
     {
       $match: { correo: correo
       }
+    },
+    {
+      $lookup: {
+        from: 'inscripcion',
+        localField: 'aspExtPersonal.documento_id',
+        foreignField: 'documento_id',
+        as: 'Inscripcion'
+      }
+    }, 
+    {
+      $unwind: {
+        path: '$Inscripcion'
+      }
+      
     }
+
   ]
   const aspExtPersonal = await connection.collection('aspExtPersonal').aggregate(aggregate).toArray()
   return aspExtPersonal[0]
 }
+
+//obtener estudiantes admitidos
+const getAspirantesExtPersonalAdmitidos = async (limit) => {
+  const connection = await mongoConnector
+  let aggregate = [  // Array de objetos
+    {
+      $match: { 
+        "Inscripcion.admitido": 1
+      }
+    },
+    {
+      $lookup: {
+        from: 'aspExtAcademic',
+        localField: 'documento_id',
+        foreignField: 'documento_id',
+        as: 'aspExtAcademic'
+      }
+    }, {
+      $unwind: {
+        path: '$aspExtAcademic'
+      }
+    },
+    {
+      $lookup: {
+        from: 'inscripcion',
+        localField: 'documento_id',
+        foreignField: 'documento_id',
+        as: 'Inscripcion'
+      }
+    }, {
+      $unwind: {
+        path: '$Inscripcion'
+      }
+    }
+  ]
+  const aspExtPersonal = await connection.collection('aspExtPersonal').aggregate(aggregate).toArray()
+
+  aspExtPersonal.forEach(element => {
+    element.Inscripcion.estado= eval(`enviroment.tiposEstado.e${element.Inscripcion.estado}`
+    )
+  
+ });
+  return aspExtPersonal
+}
+
 
 module.exports = {
   saveOrUpdateAspExtPersonal ,
@@ -249,5 +310,6 @@ module.exports = {
   deleteAspExtPersonalByDocument,
   getAspirantesExtPersonal,
   consultarExternos,
-  getAspExtPersonalByCorreo
+  getAspExtPersonalByCorreo,
+  getAspirantesExtPersonalAdmitidos
 }

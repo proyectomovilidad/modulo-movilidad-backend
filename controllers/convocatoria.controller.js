@@ -44,9 +44,9 @@ const getConvocatoriaById = async (req, res, next) => {
 
 
 module.exports = {
-    saveOrUpdateConvocatoria,
-    getConvocatorias,
-    getConvocatoriaById
+  saveOrUpdateConvocatoria,
+  getConvocatorias,
+  getConvocatoriaById
    
 }
     
