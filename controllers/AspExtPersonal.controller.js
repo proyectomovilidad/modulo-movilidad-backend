@@ -33,6 +33,7 @@ const getAspExtPersonal = async (req, res, next) => {
   try { 
       const aspExtPersonal = await model.getAspExtPersonal()
       res.send(aspExtPersonal)
+      console.log('aca: ',aspExtPersonal)
     } catch (e) {
       errorUtils.sendErrorResponse(res, e)
     }

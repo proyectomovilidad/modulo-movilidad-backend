@@ -31,7 +31,7 @@ const saveOrUpdateAspUisPersonal = async (req, res, next) => {
 const getAspiranteUisPersonal = async (req, res, next) => {
   try {
     const aspUisPersonal = await model.getAspiranteUisPersonal()
-    res.send(aspUisPersonal)
+    res.send({status: true, data: aspUisPersonal})
   } catch (e) {
     errorUtils.sendErrorResponse(res, e)
   }

@@ -30,11 +30,21 @@ const getDepartamentos = async (req, res, next) => {
     }
 }
 
+const getAllDepartamentos = async (req, res, next) => {
+  try { 
+      const departamentos = await model.getAllDepartamentos()
+      res.send({status: true, data: departamentos})
+    } catch (e) {
+      res.send({message: e.toString(), status: false})
+    }
+}
+
 
 
 module.exports = {
     saveOrUpdateDepartamento,
     getDepartamentos,
+    getAllDepartamentos
    
    
 }

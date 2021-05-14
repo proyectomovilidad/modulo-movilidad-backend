@@ -24,7 +24,14 @@
    return departamentos
  }
  
+ const getAllDepartamentos = async ()=> {
+   const connection = await mongoConnector
+  
+   const departamentos = await connection.collection('departamento').find({}).toArray() // Devuelve la respuesta como un array de objetos
+   return departamentos
+ }
  module.exports = {
     saveOrUpdateDepartamento,
-    getDepartamentos
+    getDepartamentos,
+    getAllDepartamentos
  }

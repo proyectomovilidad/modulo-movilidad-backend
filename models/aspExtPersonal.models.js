@@ -137,8 +137,7 @@ const getAspirantesExtPersonal = async () => {
   const aspExtPersonal = await connection.collection('aspExtPersonal').aggregate(aggregate).toArray()
 
   aspExtPersonal.forEach(element => {
-    element.Inscripcion.estado= eval(`enviroment.tiposEstado.e${element.Inscripcion.estado}`
-    )
+    element.Inscripcion.estado= eval(`enviroment.tiposEstado['e${element.Inscripcion.estado}']`)
   
  });
   return aspExtPersonal
@@ -225,7 +224,6 @@ const consultarExternos = async (consulta) => {
     }
   ]
   const aspExtPersonal = await connection.collection('aspExtPersonal').aggregate(aggregate).toArray()
-  console.log("resultado ", transformarConsulta(consulta))
   return aspExtPersonal
 
 } 
@@ -233,14 +231,11 @@ const consultarExternos = async (consulta) => {
 const getAspExtPersonalByCorreo = async (correo) => {
   const connection = await mongoConnector
   let aggregate = [  // Array de objetos
-    {
-      $match: { correo: correo
-      }
-    },
+    
     {
       $lookup: {
         from: 'inscripcion',
-        localField: 'aspExtPersonal.documento_id',
+        localField: 'documento_id',
         foreignField: 'documento_id',
         as: 'Inscripcion'
       }
@@ -250,8 +245,11 @@ const getAspExtPersonalByCorreo = async (correo) => {
         path: '$Inscripcion'
       }
       
+    },
+    {
+      $match: { 'correo': correo
+      }
     }
-
   ]
   const aspExtPersonal = await connection.collection('aspExtPersonal').aggregate(aggregate).toArray()
   return aspExtPersonal[0]
@@ -294,9 +292,7 @@ const getAspirantesExtPersonalAdmitidos = async (limit) => {
   const aspExtPersonal = await connection.collection('aspExtPersonal').aggregate(aggregate).toArray()
 
   aspExtPersonal.forEach(element => {
-    element.Inscripcion.estado= eval(`enviroment.tiposEstado.e${element.Inscripcion.estado}`
-    )
-  
+    element.Inscripcion.estado = eval(`enviroment.tiposEstado['e${element.Inscripcion.estado}']`)
  });
   return aspExtPersonal
 }

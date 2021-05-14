@@ -73,7 +73,10 @@ const saveDocumentoFile = async (req, res, next)=>{
 const getDocumentosByNombre = async (req, res, next)=>{
   try{
     res.download(__dirname+'/../uploadFiles/'+req.params.fileName, req.params.fileName, err=>{
-      if(err){console.log(err)}
+      if(err){
+        console.log(err)
+        res.send({message: 'Documento no existe', status: false})
+      }
     })
   }catch(e){
     res.send({message: e.toString(), status: false})

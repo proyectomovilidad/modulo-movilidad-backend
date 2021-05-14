@@ -8,8 +8,7 @@ const saveOrUpdateAspUisPersonal = async (aspUisPersonalId, aspUisPersonalBody) 
   const connection = await mongoConnector
   delete aspUisPersonalBody._id
   const valid = await getValidarAspirantes(aspUisPersonalBody.codigo_est)
-  console.log(valid)
-  console.log("aspUisPersonalId ", !aspUisPersonalId)
+
   if ((valid === 0 && !aspUisPersonalId) || (aspUisPersonalId)) {
     const aspUisPersonal = await connection.collection('aspUisPersonal').findOneAndUpdate({
       _id: new ObjectId(aspUisPersonalId)
@@ -125,7 +124,7 @@ const getAspirantesUisPersonal = async () => {
   ]
   const aspUisPersonal = await connection.collection('aspUisPersonal').aggregate(aggregate).toArray()
   aspUisPersonal.forEach(element => {
-    element.Inscripcion.estado = eval(`enviroment.tiposEstado.e${element.Inscripcion.estado}`)    
+    element.Inscripcion.estado = eval(`enviroment.tiposEstado['e${element.Inscripcion.estado}']`)    
   });
   return aspUisPersonal
 }
@@ -216,7 +215,7 @@ const consultarEstudiantes = async (consulta) => {
   
 
   aspUisPersonal.forEach(element => {
-    element.Inscripcion.estado = eval(`enviroment.tiposEstado.'e${element.Inscripcion.estado}'`)
+    element.Inscripcion.estado = eval(`enviroment.tiposEstado['e${element.Inscripcion.estado}']`)
   
   });
   return aspUisPersonal
@@ -284,8 +283,7 @@ const getAspirantesUisPersonalAdmitidos = async () => {
   ]
   const aspUisPersonal = await connection.collection('aspUisPersonal').aggregate(aggregate).toArray()
   aspUisPersonal.forEach(element => {
-    element.Inscripcion.estado = eval(`enviroment.tiposEstado.e${element.Inscripcion.estado}`
-    )
+    element.Inscripcion.estado = eval(`enviroment.tiposEstado['e${element.Inscripcion.estado}']`)
 
   });
   return aspUisPersonal

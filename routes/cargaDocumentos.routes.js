@@ -13,6 +13,7 @@ router.post('/', controllerAutc.validacionUsuario, controllerAutc.controlRutas, 
 router.post('/saveDocumentoFile', multiPartMiddleware, controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.saveDocumentoFile)
 router.post('/:_id', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.saveOrUpdateCargaDocumentos)
 router.get('/getDocumentos', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.getDocumentos)
-router.get('/getDocumentosByNombre/:fileName', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.getDocumentosByNombre)
+//router.get('/getDocumentosByNombre/:fileName', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.getDocumentosByNombre)
+router.get('/getDocumentosByNombre/:fileName',controller.getDocumentosByNombre)
 router.post('/eliminarDocumentoByNombre/:fileName', controller.eliminarDocumentoByNombre)
 module.exports = router

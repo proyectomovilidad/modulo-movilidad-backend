@@ -151,8 +151,8 @@ const deleteConvenio = async (_id) => {
       {
         $lookup: {
           from: 'institucionCooperante',
-          localField: 'convenio.codigo_inst',
-          foreignField: 'codigo_inst',
+          localField: 'convenio.nombre_institucion',
+          foreignField: '_id',
           as: 'InstitucionCooperante'
         }
       }, {
@@ -172,7 +172,6 @@ const deleteConvenio = async (_id) => {
           path: '$TipoMovilidad'
         }
       },
-
       {
         $match: transformarConsulta(consulta)
       }

@@ -6,7 +6,7 @@ const saveOrUpdateInscripcion = async (inscripcionId, inscripcionBody) => {
   const connection = await mongoConnector
   delete inscripcionBody._id
   const valid = await getValidarAspirantes(inscripcionBody.codigo_est, inscripcionBody.documento_id)
-  console.log(valid)
+  
   if ((valid === 0 && !inscripcionId) || (inscripcionId) ) {
   const inscripcion = await connection.collection('inscripcion').findOneAndUpdate({
     _id: new ObjectId(inscripcionId)
@@ -26,6 +26,17 @@ const getValidarAspirantes = async (codigo_est, documento_id) => {
   const inscripcion = await connection.collection('inscripcion').find({codigo_est: codigo_est, documento_id: documento_id, estado: "1"}).count() 
 return inscripcion
 
+}
+
+const updateInscripcionStatus = async (estado, _id)=>{
+  const connection = await mongoConnector
+  const inscripcion = await connection.collection('inscripcion').update(
+    {_id: new ObjectId(_id)},
+    {$set: {estado: estado}},
+    {upsert: true, returnOriginal: false}
+  )
+
+  return inscripcion
 }
 
 const getInscripcion = async ()=> {
@@ -199,6 +210,6 @@ module.exports = {
     deleteAspExtInscripcionByDocument,
     deleteAspUisInscripcion,
     cambiarEstadoInscripcionById,
-    getInscripcionByEstudiante
-    
+    getInscripcionByEstudiante,
+    updateInscripcionStatus
 }

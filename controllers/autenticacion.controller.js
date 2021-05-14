@@ -70,7 +70,7 @@ const inicioSesion = async (req, res, next) => {
 
             if (req.body.rol == "estudianteExt") {
               let datos = await  modelAspExt.getAspExtPersonalByCorreo(req.body.usuario);
-              
+              console.log('datos: ',datos)
               return res.send({
                   message: "Inicio de sesión correctamente",
                   status: true,

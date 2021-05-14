@@ -4,6 +4,7 @@ const controller = require("../controllers/ciudad.controller")
 const controllerAut = require('../controllers/autenticacion.controller')
 
 
+router.get('/getAllCiudades/', controller.getAllCiudades)
 router.post('/getCiudades/', controller.getCiudades)
 router.post('/', controllerAut.validacionUsuario, controllerAut.controlRutas, controller.saveOrUpdateCiudad)
 router.post('/:_id', controllerAut.validacionUsuario, controllerAut.controlRutas, controller.saveOrUpdateCiudad)

@@ -13,5 +13,6 @@ router.get('/getInscripcionByConvenioId/:_id', controller.getInscripcionByConven
 router.post('/', controller.saveOrUpdateInscripcion)
 router.post('/:_id', controller.saveOrUpdateInscripcion)
 router.post('/cambiarEstadoInscripcionById/:_id', controller.cambiarEstadoInscripcionById)
-
+router.get('/getInscripcionByEstudiante/:field/:value', controller.getInscripcionByEstudiante)
+router.post('/updateInscripcionStatus/:_id', controller.updateInscripcionStatus)
 module.exports = router

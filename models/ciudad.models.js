@@ -23,7 +23,15 @@ const getCiudades = async (codigo_departamento)=> {
   return ciudades
 }
 
+const getAllCiudades = async()=>{
+  const connection = await mongoConnector
+  
+  const ciudades = await connection.collection('ciudad').find({}).toArray() // Devuelve la respuesta como un array de objetos
+  return ciudades
+}
+
 module.exports = {
     saveOrUpdateCiudad,
-    getCiudades
+    getCiudades,
+    getAllCiudades
 }

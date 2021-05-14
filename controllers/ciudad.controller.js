@@ -30,6 +30,15 @@ const getCiudades = async (req, res, next) => {
     }
 }
 
+const getAllCiudades = async (req, res, next) => {
+  try { 
+      const ciudades = await model.getAllCiudades()
+      res.send({status: true, data:ciudades})
+    } catch (e) {
+      res.send({message: e.toString(), status: false})
+    }
+}
+
 const deleteCiudad = async (req, res, next) => {
   const id = req.params['_id']
   
@@ -69,7 +78,8 @@ const deleteCiudad = async (req, res, next) => {
 module.exports = {
     saveOrUpdateCiudad,
     getCiudades,
-    deleteCiudad
+    deleteCiudad,
+    getAllCiudades
    
 }
     

@@ -49,7 +49,9 @@ const getInscripcion = async (req, res, next) => {
     const inscripcion = await model.getInscripcion()
     res.send(inscripcion)
   } catch (e) {
-    errorUtils.sendErrorResponse(res, e)
+    console.log('error: ',e)
+    res.send({message: e.toString(), status: false})
+    //errorUtils.sendErrorResponse(res, e)
   }
 }
 
@@ -165,12 +167,30 @@ const cambiarEstadoInscripcionAuto = async (req, res, next)=>{
 
 const updateInscripcionStatus = async (req, res, next)=>{
   try{
-    const inscripcion = await model.updateInscripcionStatus(req.body, req.params._id)
+    const inscripcion = await model.updateInscripcionStatus(req.body.estado, req.params._id)
     res.send({inscripcion: inscripcion, status: true})
 
   }catch(e){
     res.send({message: e.toString(), status: false})
   }
+}
+
+const getInscripcionByEstudiante = async (req, res, next)=>{
+  try{
+    let consulta = {}
+    consulta[`${req.params.field}`] = req.params.value
+    console.log('consulta: ',consulta)
+    //if(req.params.codigo_est){consulta ={codigo_est: req.params.codigo_est}}
+    //else if(req.params.documento_id){consulta = {documento_id: req.params.documento_id}} 
+
+    if(!consulta)return res.send({message: 'consulta vacia', staus: false});
+
+    const inscripcion = await model.getInscripcionByEstudiante(consulta)
+    res.send({status: true, data: inscripcion})
+  }catch(e){
+    res.send({message: e.toString(), status: false})
+  }
+
 }
 
 const validatarInscripcionConvenio = async (tipoEstudiante, nombre_convenio) => {
@@ -242,5 +262,7 @@ module.exports = {
   getInscripcionByConvenio,
   getAspirantesUisPersonalAdmitidos,
   getAspirantesExtPersonalAdmitidos,
-  cambiarEstadoInscripcionById
+  cambiarEstadoInscripcionById,
+  getInscripcionByEstudiante,
+  updateInscripcionStatus
 }
