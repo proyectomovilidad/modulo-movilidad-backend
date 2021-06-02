@@ -1,7 +1,7 @@
 const validator = require('./generic.validators')
 
 const validateSolicitudPresentada = (user) => {
-  const properties = [ 'tipo_apoyo', 'entidad_financiera', 'numero_cuenta', 'tipo_cuenta', 'estrato',
+  const properties = [ 'tipo_apoyo', 'entidad_financiera', 'numero_cuenta', 'tipo_cuenta',
     'fecha_solicitud'] 
   validator.validateProperties(user, properties)
 } 
