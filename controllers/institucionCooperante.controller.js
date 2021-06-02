@@ -73,12 +73,27 @@ const getInstitucionCooperanteByCiudad = async (req, res, next) => {
     }
 }
 
+const deleteInstitucionCooperante  = async (req, res, next) =>{
+  try { 
+    const id = req.params['_id']
+     const institucionCooperante = await model.deleteInstitucionCooperante(id)
+     
+      res.send(institucionCooperante)
+    } catch (e) {
+     // errorUtils.sendErrorResponse(res, e)
+     console.log(e)
+     res.send(convenio)
+
+    }
+}
+
 module.exports = {
     saveOrUpdateInstitucionCooperante,
     getInstitucionCooperante,
     getInstitucionCooperanteById,
     getInstitucionCooperanteByPais,
     getInstitucionCooperanteByCiudad,
-    getInstitucionByTipoMovilidad
+    getInstitucionByTipoMovilidad,
+    deleteInstitucionCooperante
    
 }

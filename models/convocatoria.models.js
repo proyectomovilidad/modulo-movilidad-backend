@@ -37,9 +37,27 @@ const getConvocatoriaById = async (convocatoriaId)=> {
   return convocatoria
 }
 
+const deleteConvocatoria = async (_id) => {
+  const connection = await mongoConnector
+  try {
+    const convocatoria = await connection.collection('convocatoria').findOneAndDelete({ _id: _id })
+
+    if (convocatoria.ok === 1) {
+      return { message: "El documento fue eliminado", status: true };
+    } else {
+      return { message: "El documento no ha sido eliminado", status: false };
+
+    }
+  }
+  catch (e) {
+    return { message: e, status: false };
+  }
+}
+
 module.exports = {
     saveOrUpdateConvocatoria,
     getConvocatorias,
-    getConvocatoriaById
+    getConvocatoriaById,
+    deleteConvocatoria
     
 }

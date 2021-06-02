@@ -57,6 +57,18 @@ const inicioSesion = async (req, res, next) => {
         if (req.body.contrasena == usuarios[0].contrasena) {
             
             //const bcrypt = require('bcrypt')
+
+            if (req.body.rol == "administrador") {
+              let datos = await modelProfesores.getProfesorByCorreo(req.body.usuario);
+            
+            return res.send({
+                message: "Inicio de sesión correctamente",
+                status: true,
+                token: crearToken(usuarios[0], `${datos._id}`),
+                usuario: datos
+            })
+          }
+
             if (req.body.rol == "estudianteUis") {
               let datos = await modelAspUis.getAspUisPersonalByCorreo(req.body.usuario);
               
@@ -89,6 +101,18 @@ const inicioSesion = async (req, res, next) => {
                   usuario: datos
               })
             }
+            
+
+            if (req.body.rol == "profesionalrelext") {
+              let datos = await modelProfesores.getProfesorByCorreo(req.body.usuario);
+            
+            return res.send({
+                message: "Inicio de sesión correctamente",
+                status: true,
+                token: crearToken(usuarios[0], `${datos._id}`),
+                usuario: datos
+            })
+          }
             
             
 
@@ -187,11 +211,11 @@ const validarRuta = (metodo, url, baseUrl, usuario) => {
 
 /*
 Editar: put, visualizar: get, delete: eliminar, post: save
-  admin: 1
-  estudiante: 2
-  estudianteexterno: 3
-  profesor: 4
-  profesionalRelExt:5
+  'r1': 'administrador',
+  'r2': 'estudiante',
+  'r3': 'estudianteExterno',
+  'r4': 'profesor',
+  'r5': 'profesionalrelext'
 */
 
 const permisos = {

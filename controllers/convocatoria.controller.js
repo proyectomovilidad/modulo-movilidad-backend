@@ -40,13 +40,28 @@ const getConvocatoriaById = async (req, res, next) => {
     }
 }
 
+const deleteConvocatoria  = async (req, res, next) =>{
+  try { 
+    const id = req.params['_id']
+     const convocatoria = await model.deleteConvocatoria(id)
+     
+      res.send(convocatoria)
+    } catch (e) {
+     // errorUtils.sendErrorResponse(res, e)
+     console.log(e)
+     res.send(convocatoria)
+
+    }
+}
+
 
 
 
 module.exports = {
   saveOrUpdateConvocatoria,
   getConvocatorias,
-  getConvocatoriaById
+  getConvocatoriaById,
+  deleteConvocatoria
    
 }
     

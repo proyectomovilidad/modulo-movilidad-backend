@@ -89,7 +89,22 @@ const getInstitucionCooperanteByCiudad = async (ciudadId)=> {
   return institucionCooperante
 }
 
+const deleteInstitucionCooperante = async (_id) => {
+  const connection = await mongoConnector
+  try {
+    const institucionCooperante = await connection.collection('institucionCooperante').findOneAndDelete({ _id: _id })
 
+    if (institucionCooperante.ok === 1) {
+      return { message: "El documento fue eliminado", status: true };
+    } else {
+      return { message: "El documento no ha sido eliminado", status: false };
+
+    }
+  }
+  catch (e) {
+    return { message: e, status: false };
+  }
+}
 
 
 module.exports = {
@@ -98,5 +113,6 @@ module.exports = {
     getInstitucionCooperanteById,
     getInstitucionCooperanteByPais,
     getInstitucionCooperanteByCiudad,
-    getInstitucionByTipoMovilidad
+    getInstitucionByTipoMovilidad,
+    deleteInstitucionCooperante
 }

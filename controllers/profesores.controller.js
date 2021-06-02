@@ -5,7 +5,7 @@ const validator = require('./../validators/profesores.validators')
 
 /**
 ROLES:
-1: Administrador, 2: Estudiante Uis, 3: Estudiante externo, 4: profesores 
+1: Administrador, 2: Estudiante Uis, 3: Estudiante externo, 4: profesores , 5: profesionalRELEXT
  */
 const saveOrUpdateProfesores= async (req, res, next) => {
     try {

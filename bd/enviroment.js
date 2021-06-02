@@ -4,9 +4,10 @@ const tiposEstado ={
     "e0": "Cancelado",
     "e1": "Inscrito",
     "e2": "Carga documentos",
-    "e3": "Movilidad",
-    "e4": "Finalizado",
-    "e5": "Prorroga"
+    "e3": "Postulado",
+    "e4": "Movilidad",
+    "e5": "Prorroga",
+    "e6": "Finalizado"
   }
 
 const estadosAdmitido ={
@@ -16,11 +17,11 @@ const estadosAdmitido ={
 }
 
 const userRoles = {
-  'r1': 'admin',
+  'r1': 'administrador',
   'r2': 'estudiante',
   'r3': 'estudianteExterno',
   'r4': 'profesor',
-  'r5': 'profesionalRelExt'
+  'r5': 'profesionalrelext'
 }  
 
 module.exports = {

@@ -29,11 +29,27 @@ const getApoyo = async (req, res, next) => {
     }
 }
 
+const deleteApoyo  = async (req, res, next) =>{
+  try { 
+    const id = req.params['_id']
+     const apoyo = await model.deleteApoyo(id)
+     
+      res.send(apoyo)
+    } catch (e) {
+     // errorUtils.sendErrorResponse(res, e)
+     console.log(e)
+     res.send(apoyo)
+
+    }
+}
+
+
 
 
 module.exports = {
     saveOrUpdateApoyo,
     getApoyo,
+    deleteApoyo
    
    
 }
