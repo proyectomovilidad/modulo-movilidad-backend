@@ -92,7 +92,7 @@ const deleteAspUisAcademic  = async (req, res, next) =>{
      const aspUisAcademic = await model.deleteAspUisAcademic(id)
       const aspUisPersonal = await modelPersonal.deleteAspUisPersonal(id)
       const inscripcion = await modelInscripcion.deleteAspUisInscripcion(id)
-
+    // agregar eliminaciond e usuario
       res.send(aspUisAcademic)
     } catch (e) {
      // errorUtils.sendErrorResponse(res, e)

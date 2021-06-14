@@ -1,3 +1,4 @@
 # Directorio dependencias 
 
 /node_modules
+.idea/

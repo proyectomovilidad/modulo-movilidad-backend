@@ -82,9 +82,18 @@ const deleteInstitucionCooperante  = async (req, res, next) =>{
     } catch (e) {
      // errorUtils.sendErrorResponse(res, e)
      console.log(e)
-     res.send(convenio)
+     res.send({status: false, message: e.toString()})
 
     }
+}
+
+const consultar = async (req, res, next) => {
+  try{
+    const consulta = await model.consultar(req.body);
+    res.send({status: true, data: consulta})
+  }catch (e){
+    res.send({status: false, message: e.toString()})
+  }
 }
 
 module.exports = {
@@ -94,6 +103,6 @@ module.exports = {
     getInstitucionCooperanteByPais,
     getInstitucionCooperanteByCiudad,
     getInstitucionByTipoMovilidad,
-    deleteInstitucionCooperante
-   
+    deleteInstitucionCooperante,
+    consultar
 }

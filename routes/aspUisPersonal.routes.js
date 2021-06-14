@@ -4,7 +4,7 @@ const controller = require("../controllers/AspUisPersonal.controller")
 const controllerAutc = require("../controllers/autenticacion.controller")
 
 
-router.get('/getAspiranteUisPersonal/', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.getAspiranteUisPersonal)
+// router.get('/getAspiranteUisPersonal/', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.getAspiranteUisPersonal)
 router.get('/getAspiranteUisPersonal/', controller.getAspiranteUisPersonal)
 router.get('/getAspUisPersonalById/:_id', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.getAspUisPersonalById)
 router.get('/getAspUisPersonalById/:_id', controller.getAspUisPersonalById)

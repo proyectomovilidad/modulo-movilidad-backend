@@ -27,23 +27,39 @@ const getApoyo = async () => {
 const deleteApoyo = async (_id) => {
   const connection = await mongoConnector
   try {
-    const apoyo = await connection.collection('tipoApoyo').findOneAndDelete({ _id: _id })
+    const apoyo = await connection.collection('tipoApoyo').deleteOne({ _id: new ObjectId(_id) });
 
-    if (apoyo.ok === 1) {
-      return { message: "El documento fue eliminado", status: true };
+    if (apoyo.deletedCount === 1) {
+      return {status: true };
     } else {
-      return { message: "El documento no ha sido eliminado", status: false };
+      return { status: false };
 
     }
   }
   catch (e) {
-    return { message: e, status: false };
+    return { message: e.toString(), status: false };
   }
+}
+
+const getTipoApoyoById = async (_id) => {
+  const connection = await mongoConnector;
+  const tipoApoyo = await connection.collection('tipoApoyo').find({_id: new ObjectId(_id)}).toArray();
+console.log('desde model: ', tipoApoyo[0]);
+  return tipoApoyo[0];
+}
+
+const getTipoApoyoByEstrato = async (estratos) => {
+  const connection = await mongoConnector
+  const tipo_apoyos = await connection.collection('tipoApoyo').find({estratos_tipo_apoyo: { $all: estratos }}).toArray()
+
+  return tipo_apoyos
 }
 
 
 module.exports = {
   saveOrUpdateApoyo,
   getApoyo,
-  deleteApoyo
+  deleteApoyo,
+  getTipoApoyoByEstrato,
+  getTipoApoyoById
 }

@@ -70,25 +70,30 @@ const getProfesoresConsulta = async () => {
   const connection = await mongoConnector
   let aggregate = [  // Array de objetos
     {
-      $match: { // Reperesenta el select en mongo, los atributos dentro de las llaves son los criterios de busqieda
-
+      $project: {
+        "profesores": "$$ROOT"
       }
     },
     {
       $lookup: {
-        from: 'convocatoria',
-        localField: 'codigo_conv',
-        foreignField: 'codigo_conv',
-        as: 'Convocatoria'
+        from: "convocatoria",
+        localField: "profesores.codigo_conv",
+        foreignField: "Convocatoria.codigo_conv",
+        as: "Convocatoria"
       }
-    }, {
-      $unwind: {
-        path: '$Convocatoria'
+    },
+    // crea un objeto de un objeto nuevo por cada posicion del array
+
+
+    {
+      $match: { // Reperesenta el select en mongo, los atributos dentro de las llaves son los criterios de busqieda
+
       }
     }
   ]
   const profesor = await connection.collection('profesores').aggregate(aggregate).toArray()
 
+  console.log('profesores: ', profesor)
   return profesor
 }
 

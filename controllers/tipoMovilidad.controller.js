@@ -25,7 +25,8 @@ const getTipoMovilidad = async (req, res, next) => {
       const tipoMovilidad = await model.getTipoMovilidad()
       res.send(tipoMovilidad)
     } catch (e) {
-      errorUtils.sendErrorResponse(res, e)
+      //errorUtils.sendErrorResponse(res, e)
+      res.send({status: false, message: e.toString()})
     }
 }
 
@@ -57,4 +58,3 @@ module.exports = {
    
    
 }
-    

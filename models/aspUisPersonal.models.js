@@ -129,10 +129,10 @@ const getAspirantesUisPersonal = async () => {
   return aspUisPersonal
 }
 
-function transformarConsulta(consulta) {
+const transformarConsulta = (consulta) => {
 
-  const nuevaConsulta = {}
-  for (c in consulta) {
+  let nuevaConsulta = {}
+  for (let c in consulta) {
 
     if (consulta[c]) {
       if (c.includes("._id")) {
@@ -143,7 +143,6 @@ function transformarConsulta(consulta) {
     }
   }
   return nuevaConsulta
-
 }
 
 const consultarEstudiantes = async (consulta) => {
@@ -212,38 +211,35 @@ const consultarEstudiantes = async (consulta) => {
     }
   ]
   const aspUisPersonal = await connection.collection('aspUisPersonal').aggregate(aggregate).toArray()
-  
 
   aspUisPersonal.forEach(element => {
     element.Inscripcion.estado = eval(`enviroment.tiposEstado['e${element.Inscripcion.estado}']`)
-  
   });
   return aspUisPersonal
-
 }
 
 const getAspUisPersonalByCorreo = async (correo) => {
   const connection = await mongoConnector
   let aggregate = [  // Array de objetos
     {
-      $match: {
-        correo: correo
-      }
-    },
-    {
       $lookup: {
-        from: 'inscripcion',
-        localField: 'aspUispersonal.codigo_est',
-        foreignField: 'codigo_est',
-        as: 'Inscripcion'
+        from: "inscripcion",
+        localField: "codigo_est",
+        foreignField: "codigo_est",
+        as: "Inscripcion"
       }
     }, {
-      $unwind: {
-        path: '$Inscripcion'
+      $unwind: "$Inscripcion"
+    },
+    {
+      $match: {
+        "correo": correo
       }
     }
   ]
+  console.log(correo);
   const aspUisPersonal = await connection.collection('aspUisPersonal').aggregate(aggregate).toArray()
+  console.log(aspUisPersonal)
   return aspUisPersonal[0]
 }
 

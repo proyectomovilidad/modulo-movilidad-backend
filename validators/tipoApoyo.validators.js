@@ -1,7 +1,7 @@
 const validator = require('./generic.validators')
 
 const validateApoyo = (user) => {
-  const properties = ['nombre_tipo_apoyo']
+  const properties = ['nombre_tipo_apoyo', 'estratos_tipo_apoyo']
   validator.validateProperties(user, properties)
 }
 

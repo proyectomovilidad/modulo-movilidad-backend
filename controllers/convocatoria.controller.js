@@ -17,6 +17,7 @@ const saveOrUpdateConvocatoria= async (req, res, next) => {
         res.send(convocatoria)
       } catch (e) {
         console.log(e);
+        res.send({status: false, message: e.toString()})
       }
 }
 
@@ -48,12 +49,20 @@ const deleteConvocatoria  = async (req, res, next) =>{
       res.send(convocatoria)
     } catch (e) {
      // errorUtils.sendErrorResponse(res, e)
-     console.log(e)
-     res.send(convocatoria)
+     res.send({status: false, message: e.toString()})
 
     }
 }
 
+const consultar = async (req, res, next) => {
+  try{
+    const consulta = await model.consultar(req.body)
+
+    res.send({status: true, data: consulta})
+  }catch(e){
+    res.send({status: false, message: e.toString()})
+  }
+}
 
 
 
@@ -61,7 +70,6 @@ module.exports = {
   saveOrUpdateConvocatoria,
   getConvocatorias,
   getConvocatoriaById,
-  deleteConvocatoria
-   
+  deleteConvocatoria,
+  consultar,
 }
-    

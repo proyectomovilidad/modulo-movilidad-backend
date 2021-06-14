@@ -40,24 +40,68 @@ const getConvocatoriaById = async (convocatoriaId)=> {
 const deleteConvocatoria = async (_id) => {
   const connection = await mongoConnector
   try {
-    const convocatoria = await connection.collection('convocatoria').findOneAndDelete({ _id: _id })
+    const convocatoria = await connection.collection('convocatoria').deleteOne({ _id: new ObjectId(_id) })
 
-    if (convocatoria.ok === 1) {
-      return { message: "El documento fue eliminado", status: true };
+    if (convocatoria.deletedCount === 1) {
+      return { status: true };
     } else {
-      return { message: "El documento no ha sido eliminado", status: false };
+      return { status: false };
 
     }
   }
   catch (e) {
-    return { message: e, status: false };
+    return { message: e.toString(), status: false };
   }
+}
+
+const transformarConsulta = (consulta) => {
+
+  let nuevaConsulta = {}
+  for (let c in consulta) {
+
+    if (consulta[c]) {
+      if (c.includes("._id") || c.includes("nombre_institucion")) {
+        nuevaConsulta[`${c}`] = ObjectId(consulta[c]);
+      } else {
+        nuevaConsulta[`${c}`] = consulta[c];
+      }
+    }
+  }
+  return nuevaConsulta
+}
+
+const consultar = async (consulta) => {
+  const connection = await mongoConnector;
+
+  const aggregate = [
+    {
+      $project: {
+        "convocatoria": "$$ROOT"
+      }
+    },
+    {
+      $lookup: {
+        from: "institucionCooperante",
+        localField: "convocatoria.nombre_institucion",
+        foreignField: "_id",
+        as: "InstitucionCooperante"
+      }
+    }, {
+      $unwind: "$InstitucionCooperante"
+    },
+    {
+      $match: transformarConsulta(consulta)
+    }
+  ];
+  console.log(aggregate)
+  const respConsulta = connection.collection('convocatoria').aggregate(aggregate).toArray()
+  return respConsulta
 }
 
 module.exports = {
     saveOrUpdateConvocatoria,
     getConvocatorias,
     getConvocatoriaById,
-    deleteConvocatoria
-    
+    deleteConvocatoria,
+    consultar
 }

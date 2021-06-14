@@ -5,6 +5,8 @@ const mongoConnector = require('../bd/mongo.db')
 const saveOrUpdateSolicitudPresentada = async (soliPresentadaId, soliPresentadaBody) => {
   const connection = await mongoConnector
   delete soliPresentadaBody._id
+  if(!soliPresentadaId)soliPresentadaBody.tipo_apoyo = new ObjectId(soliPresentadaBody.tipo_apoyo);
+
   const soliPresentada = await connection.collection('soliPresentada').findOneAndUpdate({
     _id: new ObjectId(soliPresentadaId)
   }, {
@@ -18,7 +20,7 @@ const saveOrUpdateSolicitudPresentada = async (soliPresentadaId, soliPresentadaB
 
 const getSolicitudPresentada = async ()=> {
   const connection = await mongoConnector
- 
+
   const solicitudPresentada = await connection.collection('soliPresentada').find({}).toArray() // Devuelve la respuesta como un array de objetos
   return solicitudPresentada
 }
@@ -64,12 +66,32 @@ const getSolicitudPresentadaById = async (solicitudId)=> {
   return solicitudPresentada
 }
 
+const getSolicitudesByEstudiante = async (documento_id) => {
+  const connection = await mongoConnector;
+  const aggregate = [
+    {
+      $lookup: {
+        from: "tipoApoyo",
+        localField: "tipo_apoyo",
+        foreignField: "_id",
+        as: "TipoApoyos"
+      }
+    },{$unwind: "$TipoApoyos"},
+    { $match: {"estudiante": documento_id} }
+  ]
+  const solicitudPresentada = await connection.collection('soliPresentada').aggregate(aggregate).toArray()
+  console.log('solicitudes: ',solicitudPresentada)
+  console.log('aggregate: ',aggregate)
+
+  return solicitudPresentada;
+}
 
 
 module.exports = {
-    saveOrUpdateSolicitudPresentada,
-    getSolicitudPresentada,
-    getSolicitudPresentadaByNumeroInscripcion,
-    getSolicitudPresentadaByEstadoSolicitud,
-    getSolicitudPresentadaById
+  saveOrUpdateSolicitudPresentada,
+  getSolicitudPresentada,
+  getSolicitudPresentadaByNumeroInscripcion,
+  getSolicitudPresentadaByEstadoSolicitud,
+  getSolicitudPresentadaById,
+  getSolicitudesByEstudiante
 }

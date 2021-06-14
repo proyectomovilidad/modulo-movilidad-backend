@@ -10,7 +10,8 @@ router.get('/getAspUisAcademicByAnoInscripcion/', controllerAutc.validacionUsuar
 router.get('/getAspUisAcademicByPeriodoAcademicoId/:_id', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.getAspUisAcademicByPeriodoAcademico)
 router.get('/getAspiranteUisAcademicByProgramaAcademicId/:_id', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.getAspUisAcademicByProgramaAcademico)
 router.get('/getAspiranteUisAcademic/',  controller.getAspUisAcademic)
-router.delete('/deleteAspiranteUisAcademic/:_id', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.deleteAspUisAcademic) 
+// router.delete('/deleteAspiranteUisAcademic/:_id', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.deleteAspUisAcademic)
+router.delete('/deleteAspiranteUisAcademic/:_id', controller.deleteAspUisAcademic)
 router.post('/', controller.saveOrUpdateAspUisAcademic)
 router.post('/:_id', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.saveOrUpdateAspUisAcademic)
 
