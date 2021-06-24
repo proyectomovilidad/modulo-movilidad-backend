@@ -29,7 +29,7 @@ const tipoConvocatoriaRoute = require('./convocatoria.routes')
 const tipoProyectoRoute = require('./tipoProyecto.routes')
 const autenticacionRoute = require('./autenticacion.routes')
 const entornoMovilidadRoute = require('./entornoMovilidad.routes')
-
+const usuariosRoute = require('./usuarios.routes')
 
 
 const routing = (app) => {
@@ -65,8 +65,7 @@ const routing = (app) => {
     app.use('/tipoProyecto', tipoProyectoRoute)
     app.use('/autenticacion', autenticacionRoute)
     app.use('/entornoMovilidad', entornoMovilidadRoute)
-
-    
+    app.use('/usuarios', usuariosRoute)
 }
 
 

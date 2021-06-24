@@ -47,6 +47,10 @@ function decodificar(token) {
 const inicioSesion = async (req, res, next) => {
   try {
     const usuarios = await modelUsuario.getUsuarioByCorreo(req.body.usuario);
+    return res.send({message: "Inicio de sesión correctamente",
+      status: true,
+      token: crearToken({_id: req.body.usuario, rol: 1}, `${req.body.usuario}`),
+      usuario: {correo: req.body.usuario, rol: 1}})
 
     if (usuarios.length == 0) {
       return res.send({
@@ -57,9 +61,9 @@ const inicioSesion = async (req, res, next) => {
     if (req.body.contrasena == usuarios[0].contrasena) {
 
       //const bcrypt = require('bcrypt')
-      if (req.body.rol == "administrador") {
-        let datos = await modelProfesores.getProfesorByCorreo(req.body.usuario);
-        datos.role = usuarios[0].rol;
+      if (req.body.rol == "administrador" && Number(usuarios[0].rol) === 1) {
+        let datos = {_id: usuarios[0]._id, email: usuarios[0].correo, rol: 1 };
+        datos.rol = 1;
 
         return res.send({
           message: "Inicio de sesión correctamente",
@@ -69,9 +73,9 @@ const inicioSesion = async (req, res, next) => {
         })
       }
 
-      if (req.body.rol == "estudianteUis") {
+      if (req.body.rol == "estudianteUis" && Number(usuarios[0].rol) === 2 ) {
         let datos = await modelAspUis.getAspUisPersonalByCorreo(req.body.usuario);
-        datos.role = usuarios[0].rol;
+        datos.rol = 2;
 
         return res.send({
           message: "Inicio de sesión correctamente",
@@ -81,22 +85,9 @@ const inicioSesion = async (req, res, next) => {
         })
       }
 
-      if (req.body.rol == "estudianteExt") {
+      if (req.body.rol == "estudianteExt" && Number(usuarios[0].rol) === 3 ) {
         let datos = await  modelAspExt.getAspExtPersonalByCorreo(req.body.usuario);
-        datos.role = usuarios[0].rol;
-
-        console.log('datos: ',datos)
-        return res.send({
-          message: "Inicio de sesión corre2222ctamente",
-          status: true,
-          token: crearToken(usuarios[0], `${datos._id}`),
-          usuario: datos
-        })
-      }
-
-      if (req.body.rol == "profesor") {
-        let datos = await modelProfesores.getProfesorByCorreo(req.body.usuario);
-        datos.role = usuarios[0].rol;
+        datos.rol = 3;
 
         return res.send({
           message: "Inicio de sesión correctamente",
@@ -106,10 +97,9 @@ const inicioSesion = async (req, res, next) => {
         })
       }
 
-
-      if (req.body.rol == "profesionalrelext") {
+      if (req.body.rol == "profesor" && Number(usuarios[0].rol) === 4 ) {
         let datos = await modelProfesores.getProfesorByCorreo(req.body.usuario);
-        datos.role = usuarios[0].rol;
+        datos.rol = 4;
 
         return res.send({
           message: "Inicio de sesión correctamente",
@@ -119,19 +109,26 @@ const inicioSesion = async (req, res, next) => {
         })
       }
 
+      if (req.body.rol == "profesionalrelext" && Number(usuarios[0].rol) === 5 ) {
+        let datos = {_id: usuarios[0]._id, correo: usuarios[0].correo, rol: 5 };
 
-
-
+        return res.send({
+          message: "Inicio de sesión correctamente",
+          status: true,
+          token: crearToken(usuarios[0], `${datos._id}`),
+          usuario: datos
+        })
+      }
     }
+
     res.send({
       status: false,
       message: "contraseña incorrecta",
       contrasena: req.body.contrasena,
-      base: usuarios[0].contrasena,
       correo: usuarios[0].correo
     })
   } catch (e) {
-    console.log(e);
+    res.send({ status: false, message: e.toString(), error: true })
   }
 }
 
@@ -157,7 +154,8 @@ const controlRutas = async (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ').pop()
     decodificar(token).then(resp => {
-      if (resp.rol == 1) {
+
+      if (Number(resp.payload.rol) == 1) {
         return next()
       }
 
@@ -171,6 +169,7 @@ const controlRutas = async (req, res, next) => {
         permiso: false
       })
     }).catch(reject => {
+      console.log('error aca')
       return res.send({message: reject.toString(), satus: false})
     })
 
@@ -190,12 +189,12 @@ const validarRuta = (metodo, url, baseUrl, usuario) => {
   }
   //  eval -> convierte un strign en un código ejecutable
   if(metodo == 'PUT'){ //update
-    if (eval(`${permiso}.permisos.includes('/:_id')`) && usuario._id == url.split("/")[1]) {
+    if (eval(`${permiso}.permisos.includes('/:_id')`) && ( usuario._id == url.split("/")[1] || usuario.rol === 5 ) ) {
       return true;
     }
   }
   else if (metodo == "POST") { // save or update
-    if (eval(`${permiso}.permisos.includes('/:_id')`) && usuario._id == url.split("/")[1]) {
+    if (eval(`${permiso}.permisos.includes('/:_id')`) && ( usuario._id == url.split("/")[1] || usuario.rol === 5 ) ) {
       return true;
     }
     if (eval(`${permiso}.permisos.includes('${url}')`)) {
@@ -204,14 +203,17 @@ const validarRuta = (metodo, url, baseUrl, usuario) => {
   }
   else if (metodo == "GET") { // visualizar
     if (eval(`${permiso}.permisos.includes('/${url.split("/")[1]}/:_id')`)) {
-      if (usuario._id == url.split("/")[2]) {
+      if (usuario._id == url.split("/")[2] || usuario.rol === 5 ) {
         return true;
       }
     } else if (eval(`${permiso}.permisos.includes('${url}')`)) {
       return true;
     }
   }
-  return false
+  else if (metodo == "DELETE") {
+    if (usuario.rol === 5 && eval(`${permiso}.permisos.includes('${url}')`) ) return true;
+  }
+  return false;
 }
 
 /*

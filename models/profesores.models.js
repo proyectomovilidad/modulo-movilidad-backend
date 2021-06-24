@@ -70,16 +70,11 @@ const getProfesoresConsulta = async () => {
   const connection = await mongoConnector
   let aggregate = [  // Array de objetos
     {
-      $project: {
-        "profesores": "$$ROOT"
-      }
-    },
-    {
       $lookup: {
         from: "convocatoria",
-        localField: "profesores.codigo_conv",
-        foreignField: "Convocatoria.codigo_conv",
-        as: "Convocatoria"
+        localField: "codigo_conv",
+        foreignField: "codigo_conv",
+        as: "Convocatorias"
       }
     },
     // crea un objeto de un objeto nuevo por cada posicion del array

@@ -2,7 +2,7 @@ const validator = require('./generic.validators')
 
 const validateConvocatoria = (user) => {
   const properties = ['nombre_convocatoria', 'estado_convocatoria', 'fecha_inicio', 'fecha_final', 'fecha_suscripcion', 
-   'nombre_institucion', 'periodo_convocatoria', 'tipo_proyecto', 'link_inscripcion' ]
+   'nombre_institucion', 'periodo_convocatoria', 'tipo_proyecto', 'link_inscripcion', 'codigo_conv' ]
   validator.validateProperties(user, properties)
 }
 

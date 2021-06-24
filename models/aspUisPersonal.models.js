@@ -75,9 +75,9 @@ const getAspUisPersonalById = async (Id) => {
 const deleteAspUisPersonal = async (_id) => {
   const connection = await mongoConnector
   try {
-    const aspUisPersonal = await connection.collection('aspUisPersonal').findOneAndDelete({ codigo_est: _id })
+    const aspUisPersonal = await connection.collection('aspUisPersonal').deleteOne({ codigo_est: _id })
 
-    if (aspUisPersonal.ok === 1) {
+    if (aspUisPersonal.deletedCount === 1) {
       return { message: "El documento fue eliminado", status: true };
     } else {
       return { message: "El documento no ha sido eliminado", status: false };
@@ -210,6 +210,7 @@ const consultarEstudiantes = async (consulta) => {
       $match: transformarConsulta(consulta)
     }
   ]
+
   const aspUisPersonal = await connection.collection('aspUisPersonal').aggregate(aggregate).toArray()
 
   aspUisPersonal.forEach(element => {

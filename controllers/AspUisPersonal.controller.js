@@ -61,7 +61,6 @@ const getAspirantesUisPersonal = async (req, res, next) => {
 
 const consultarEstudiantes = async (req, res, next) => {
   try {
-
     const aspUisPersonal = await model.consultarEstudiantes(req.body)
     res.send(aspUisPersonal)
   } catch (e) {

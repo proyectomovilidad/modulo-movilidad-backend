@@ -86,11 +86,32 @@ const validateMov = async (data) =>{
   return movilidad.length > 0
 }
 
+const eliminarEntorno = async (id) => {
+  const connection = await mongoConnector
+
+  const entorno = await connection.collection('entornoMovilidad').deleteOne({ _id: new ObjectId(id) })
+
+  if (entorno.deletedCount === 1) {
+    return { status: true };
+  } else {
+    return { status: false };
+  }
+}
+
+const getEntornoMovilidadById = async (id) => {
+  const connection = await mongoConnector
+  const entorno = await connection.collection('entornoMovilidad').find({_id: new ObjectId(id) }).toArray()
+console.log(entorno)
+  return entorno[0];
+}
+
 module.exports = {
     saveOrUpdateFechasMovSaliente,
     saveOrUpdateFechasMovEntrante,
     getFechasMovEntrante,
     saveFechasMovilidad,
     updateFechasMovilidad,
-    getFechasMovByStatus
+    getFechasMovByStatus,
+    eliminarEntorno,
+    getEntornoMovilidadById
 }

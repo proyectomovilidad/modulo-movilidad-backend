@@ -11,7 +11,7 @@ router.get('/getAspUisPersonalById/:_id', controller.getAspUisPersonalById)
 router.get('/getAspirantesUisPersonal/', controller.getAspirantesUisPersonal)
 router.post('/', controller.saveOrUpdateAspUisPersonal)
 router.post('/consultarEstudiantes', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.consultarEstudiantes)
-router.post('/consultarEstudiantes', controller.consultarEstudiantes)
+// router.post('/consultarEstudiantes', controller.consultarEstudiantes)
 router.post('/:_id', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.saveOrUpdateAspUisPersonal)
 
 

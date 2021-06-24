@@ -20,7 +20,7 @@ const saveOrUpdateUsuario = async (usuarioCorreo, usuarioBody) => {
       return usuario.value
     }
     return { status: false }
-  }
+}
   
   
   const getValidarAspirantes = async (correo) => {
@@ -45,27 +45,88 @@ const saveOrUpdateUsuario = async (usuarioCorreo, usuarioBody) => {
   const deleteUsuario = async (correo) => {
     const connection = await mongoConnector
     try {
-      const usuario = await connection.collection('usuarios').findOneAndDelete({ correo: correo })
+      const usuario = await connection.collection('usuarios').deleteOne({ correo: correo })
   
-      if (usaurio.ok === 1) {
-        return { message: "El documento fue eliminado", status: true };
+      if (usuario.deletedCount === 1) {
+        return { status: true };
       } else {
-        return { message: "El documento no ha sido eliminado", status: false };
-  
+        return { status: false };
       }
     }
     catch (e) {
-      return { message: e, status: false };
+      return { message: e.toString(), status: false };
+    }
+}
+
+const deleteUsuarioById = async (_id) => {
+  const connection = await mongoConnector
+
+  try {
+    const usuario = await connection.collection('usuarios').deleteOne({ _id: new ObjectId(_id) })
+
+    if (usuario.deletedCount === 1) {
+      return { status: true };
+    } else {
+      return { status: false };
     }
   }
-  
- 
+  catch (e) {
+    return { message: e.toString(), status: false };
+  }
+}
 
+ const transformarConsulta = (consulta) => {
+
+   let nuevaConsulta = {}
+   for (let c in consulta) {
+
+     if (consulta[c]) {
+       if (c.includes("._id")) {
+         nuevaConsulta[`${c}`] = ObjectId(consulta[c]);
+       }
+       else if (c.includes('rol')) {
+         nuevaConsulta[`${c}`] = Number(consulta[c]);
+       }
+       else {
+         nuevaConsulta[`${c}`] = consulta[c];
+       }
+     }
+   }
+   return nuevaConsulta
+ }
+
+const consultar = async (consulta) => {
+  const connection = await mongoConnector
+
+  const usuarios = await connection.collection('usuarios').find(transformarConsulta(consulta)).toArray();
+
+  return usuarios;
+}
+
+ const getUsuarioById = async (id) => {
+   const connection = await mongoConnector
+
+   const usuario = await connection.collection('usuarios').find({_id: new ObjectId(id)}).toArray();
+
+   return usuario[0];
+ }
+
+const getAllUsuarios = async () => {
+  const connection = await mongoConnector
+
+  const usuarios = await connection.collection('usuarios').find().toArray();
+
+  return usuarios;
+}
  
 module.exports = {
 
     saveOrUpdateUsuario,
     getValidarAspirantes,
     getUsuarioByCorreo,
-    deleteUsuario
+    deleteUsuario,
+    deleteUsuarioById,
+    consultar,
+    getAllUsuarios,
+  getUsuarioById
 }

@@ -14,7 +14,6 @@ const cron = require('node-cron')
  */
 const saveOrUpdateFechasMovSaliente= async (req, res, next) => {
     try {
-      console.log('input: ',req.body  )
         const id = req.params['_id']
         if (!id) validator.validateEntornoMovilidad(req.body)
         validator.transformObjectId(req.body)
@@ -24,7 +23,18 @@ const saveOrUpdateFechasMovSaliente= async (req, res, next) => {
       } catch (e) {
         console.log(e);
       }
-} 
+}
+const updateEntornoMov = async (req, res, next) => {
+  try {
+    const id = req.params['_id']
+    console.log(req.body)
+    const movilidadSaliente = await model.saveOrUpdateFechasMovSaliente(id, req.body)
+
+    res.send(movilidadSaliente)
+  } catch (e) {
+    res.send({ status: false, error: true, message: e.toString() });
+  }
+}
 
 
 //guardar fechas
@@ -113,8 +123,7 @@ const updateFechasMovilidad = async (req, res, next) => {
 
     res.send(fechasMovilidad)
     } catch (e) {
-      let msg = "error: " + e
-      res.send({message: msg,  status: false})
+      res.send({message: e.toString(),  status: false})
     }
 } 
 
@@ -137,21 +146,19 @@ const saveOrUpdateFechasMovEntrante= async (req, res, next) => {
 const getFechasMovilidad = async (req, res, next) =>{
   try{
     const fechasMovEntrante = await model.getFechasMovEntrante()
-    res.send(fechasMovEntrante)
+    res.send({status: true, data: fechasMovEntrante})
   }catch(e){
     let msg = "error: " + e
     res.send({message: msg,  status: false})
   }
 }
 
-
 //obtener fechas por tipo y periodo
 const getFechasByStatus = async (req, res, next) =>{
   try{
     const data = {periodo: req.params.periodo, tipo: req.params.tipo }
     const fechasMovilidad = await model.getFechasMovByStatus(data)
-    console.log('fechas ',data)
-    console.log('fechas ',fechasMovilidad)
+
     res.send(fechasMovilidad)
   }catch(e){
     let msg = "error: " + e.toString()
@@ -159,13 +166,37 @@ const getFechasByStatus = async (req, res, next) =>{
   }
 }
 
+const eliminarEntorno = async (req, res, next) => {
+  try {
+    const id = req.params['_id'];
+    const entorno = await model.eliminarEntorno(id);
+    res.send(entorno);
+  } catch(e) {
+    res.send({ status: false, error: true, message: e.toString()})
+  }
+}
+
+const getEntornoMovilidadById = async (req, res, next) => {
+  try{
+    const id = req.params['_id'];
+    const entorno = await model.getEntornoMovilidadById(id);
+
+    res.send({ status: true, data: entorno })
+
+  }catch(e) {
+    res.send({status: false, error: true, message: e.toString() })
+  }
+}
 
 module.exports = {
     saveOrUpdateFechasMovSaliente,
     saveFechasMovilidad,
     updateFechasMovilidad,
     getFechasMovilidad,
-    getFechasByStatus   
+    getFechasByStatus,
+    eliminarEntorno,
+    getEntornoMovilidadById,
+    updateEntornoMov
 }
 
 // tipo 0 = saliente

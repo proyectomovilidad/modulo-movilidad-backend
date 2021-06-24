@@ -224,6 +224,10 @@ const consultarExternos = async (consulta) => {
     }
   ]
   const aspExtPersonal = await connection.collection('aspExtPersonal').aggregate(aggregate).toArray()
+  aspExtPersonal.forEach(element => {
+    element.Inscripcion.estado = eval(`enviroment.tiposEstado['e${element.Inscripcion.estado}']`)
+  });
+  console.log(aspExtPersonal)
   return aspExtPersonal
 
 } 
