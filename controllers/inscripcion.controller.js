@@ -35,12 +35,15 @@ const saveOrUpdateInscripcion = async (req, res, next) => {
       })
     } */
     req.body.estado = valido.estado;
-
-    const inscripcion = await model.saveOrUpdateInscripcion(id, req.body)
+    let inscripcion = {}
+   if(valido.nuevaInscripcion===true){
+     inscripcion = await model.saveOrUpdateInscripcion(id, req.body)
+ 
+    } 
     console.log("inscripcion", inscripcion)
-    res.send({ model: inscripcion, status: true })
+    res.send({ model: inscripcion, status: true, code: valido.code})
   } catch (e) {
-    console.log(e);
+    res.send({message: e.toString(), code:210});
   }
 }
 
@@ -209,14 +212,27 @@ const validatarInscripcionConvenio = async (tipoEstudiante, nombre_convenio) => 
     if (Number(datosAcademicos[0].promedio) >= Number(convenios[0].promedio) && Number(datosAcademicos[0].cred_cursados) >= Number(convenios[0].cred_cursados) && Number(datosAcademicos[0].cred_cursar) >= Number(convenios[0].cred_cursar)) {
       const inscripciones = await model.getInscripcionByEstudiante({codigo_est: tipoEstudiante.codigo_est, estado: '3'})
       const estadoInscripcion = inscripciones.length > 0 ? '5' : '1'
+      let inscripcionAnterior = false
+      inscripciones.forEach(element=> {
+        if (Number(element.estado) === 4 || Number(element.estado) === -1 ){
+          inscripcionAnterior = true
+        }  else {
+          inscripcionAnterior = false
+        }
+      })
+      const nuevaInscripcion = (inscripciones.length === 0 || inscripcionAnterior) 
       
       return {
         status: true,
+        nuevaInscripcion: nuevaInscripcion,
+        code:215,
         estado: estadoInscripcion
       }
     } else {
       return {
         status: false,
+        nuevaInscripcion: true,
+        code:216,
         estado: "-1"
       }
     }
@@ -225,18 +241,34 @@ const validatarInscripcionConvenio = async (tipoEstudiante, nombre_convenio) => 
   } else {
     const datosAcademicos = await modelExtAcademic.getAspExtAcademicByEstado(tipoEstudiante.documento_id)
     const convenios = await modelConvenio.getConvenioById(nombre_convenio)
-
+console.log("convenio", convenios[0])
+console.log("Datosacademicos", datosAcademicos[0])
     if (Number(datosAcademicos[0].promedio) >= Number(convenios[0].promedio) && Number(datosAcademicos[0].cred_cursados) >= Number(convenios[0].cred_cursados) && Number(datosAcademicos[0].cred_cursar) >= Number(convenios[0].cred_cursar)) {
       const inscripciones = await model.getInscripcionByEstudiante({documento_id: tipoEstudiante.documento_id, estado: '3'})
       const estadoInscripcion = inscripciones.length > 0 ? '5' : '1'
+      console.log("incripsiones", incripciones.length)
+      console.log("estado incripcion", estadoInscripcion)
 
-      return {
+      let inscripcionAnterior = false
+      inscripciones.forEach(element=> {
+        if (Number(element.estado) === 4 || Number(element.estado) === -1 ){
+          inscripcionAnterior = true
+        }  else {
+          inscripcionAnterior = false
+        }
+      })
+      const nuevaInscripcion = (inscripciones.length === 0 || inscripcionAnterior) 
+        return {
         status: true,
+        nuevaInscripcion: nuevaInscripcion,
+        code: 215,
         estado: estadoInscripcion
       }
     } else {
       return {
         status: false,
+        nuevaInscripcion: true,
+        code: 216,
         estado: "-1"
       };
     }

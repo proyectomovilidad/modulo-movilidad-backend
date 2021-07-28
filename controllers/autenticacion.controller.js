@@ -5,6 +5,7 @@ const modelAspExt = require("./../models/aspExtPersonal.models")
 const jwt = require('jwt-simple') // Realiza la importación del token
 const moment = require('moment')
 const { request } = require("express")
+const { deleteUsuario } = require("./../models/usuarios.models")
 const Promise = require('es6-promise').Promise;
 
 
@@ -46,11 +47,14 @@ function decodificar(token) {
 
 const inicioSesion = async (req, res, next) => {
   try {
-    const usuarios = await modelUsuario.getUsuarioByCorreo(req.body.usuario);
-    return res.send({message: "Inicio de sesión correctamente",
+    console.log ("reques", req.body)
+  const usuarios = await modelUsuario.getUsuarioByCorreo(req.body.usuario);
+     /* return res.send({message: "Inicio de sesión correctamente",
       status: true,
-      token: crearToken({_id: req.body.usuario, rol: 1}, `${req.body.usuario}`),
-      usuario: {correo: req.body.usuario, rol: 1}})
+      token: crearToken({_id: req.body.usuario, rol: 2}, `${req.body.usuario}`),
+      usuario: {correo: req.body.usuario, rol: 2}}) 
+*/
+console.log ("usuarios" , usuarios)
 
     if (usuarios.length == 0) {
       return res.send({
@@ -61,7 +65,7 @@ const inicioSesion = async (req, res, next) => {
     if (req.body.contrasena == usuarios[0].contrasena) {
 
       //const bcrypt = require('bcrypt')
-      if (req.body.rol == "administrador" && Number(usuarios[0].rol) === 1) {
+      if (usuarios[0].rol === 1 && Number(usuarios[0].rol) === 1) {
         let datos = {_id: usuarios[0]._id, email: usuarios[0].correo, rol: 1 };
         datos.rol = 1;
 
@@ -73,7 +77,7 @@ const inicioSesion = async (req, res, next) => {
         })
       }
 
-      if (req.body.rol == "estudianteUis" && Number(usuarios[0].rol) === 2 ) {
+      if (usuarios[0].rol === 2 && Number(usuarios[0].rol) === 2 ) {
         let datos = await modelAspUis.getAspUisPersonalByCorreo(req.body.usuario);
         datos.rol = 2;
 

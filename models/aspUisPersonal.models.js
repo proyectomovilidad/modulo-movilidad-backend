@@ -210,7 +210,7 @@ const consultarEstudiantes = async (consulta) => {
       $match: transformarConsulta(consulta)
     }
   ]
-
+console.log ("consulta", transformarConsulta(consulta))
   const aspUisPersonal = await connection.collection('aspUisPersonal').aggregate(aggregate).toArray()
 
   aspUisPersonal.forEach(element => {
