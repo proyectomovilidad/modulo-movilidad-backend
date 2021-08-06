@@ -49,11 +49,11 @@ const inicioSesion = async (req, res, next) => {
   try {
     console.log ("reques", req.body)
   const usuarios = await modelUsuario.getUsuarioByCorreo(req.body.usuario);
-     /* return res.send({message: "Inicio de sesión correctamente",
+     /*return res.send({message: "Inicio de sesión correctamente",
       status: true,
-      token: crearToken({_id: req.body.usuario, rol: 2}, `${req.body.usuario}`),
-      usuario: {correo: req.body.usuario, rol: 2}}) 
-*/
+      token: crearToken({_id: req.body.usuario, rol: 1}, `${req.body.usuario}`),
+      usuario: {correo: req.body.usuario, rol: 1}}) */
+
 console.log ("usuarios" , usuarios)
 
     if (usuarios.length == 0) {

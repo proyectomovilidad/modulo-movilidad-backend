@@ -8,6 +8,7 @@ const fs = require('fs-extra')
  * Save or updates a padlock if it doesn't exist
  *
  */
+// UNUSED
 const saveOrUpdateCargaDocumentos= async (req, res, next) => {
     try {
         const id = req.params['_id']
@@ -40,7 +41,7 @@ const eliminarDocumentoByNombre = async (req, res, next)=>{
   }
 }
 
-
+// UNUSED
 const getCargaDocumentosByNumeroInscripcion = async (req, res, next) => {
   try { 
     const numeroInscripcionId = req.params['_id']
@@ -53,7 +54,6 @@ const getCargaDocumentosByNumeroInscripcion = async (req, res, next) => {
 
 const saveDocumentoFile = async (req, res, next)=>{
   try{  
-    console.log('aaca')  
     let file = req.files.file
     let temp_path = file.path
     let target_path = `${__dirname}/../uploadFiles/${file.name}`
@@ -70,9 +70,21 @@ const saveDocumentoFile = async (req, res, next)=>{
   }
 }
 
+const existsDocumento = (req, res, next )=>{
+  let target_path = `${__dirname}/../uploadFiles/${req.params.fileName}.pdf`
+  let exists_file = false;
+
+  fs.pathExists(target_path, (err, exists) => {
+    console.log(err) // => null
+    console.log('por aca: ',exists) // => false
+    exists_file = exists;
+    res.send({status: true, existsFile: exists_file})
+  })
+}
+
 const getDocumentosByNombre = async (req, res, next)=>{
   try{
-    res.download(__dirname+'/../uploadFiles/'+req.params.fileName, req.params.fileName, err=>{
+    res.download(__dirname+'/../uploadFiles/'+req.params.fileName, req.params.rename+'.pdf', err=>{
       if(err){
         console.log(err)
         res.send({message: 'Documento no existe', status: false})
@@ -83,6 +95,7 @@ const getDocumentosByNombre = async (req, res, next)=>{
   }
 }
 
+//nombre de los documentos
 const getDocumentos = async (req, res, next)=>{
   try{
     const documentos = model.getDocumentos()
@@ -99,5 +112,6 @@ module.exports = {
   getDocumentos,
   saveDocumentoFile,
   getDocumentosByNombre,
-  eliminarDocumentoByNombre
+  eliminarDocumentoByNombre,
+  existsDocumento
 }

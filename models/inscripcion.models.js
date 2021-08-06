@@ -146,21 +146,27 @@ const getInscripcionByProgramaAcademico = async (programaAcademicoId)=> {
 const deleteAspExtInscripcionByDocument = async (documento_id) => {
   const connection = await mongoConnector
 
-  const inscripcion = await connection.collection('inscripcion').deleteOne({documento_id: documento_id}, function(err, obj) {
-    if (err) return {message: err, document:null, status:false};
-    return {document: obj.document_id, message: "El documento ha sido eliminado", status: true}
-  });
-  return {message: "Error 500"};
+  const inscripcion = await connection.collection('inscripcion').findOneAndDelete({ _id: new ObjectId(documento_id) });
+
+  if (inscripcion.ok === 1) {
+    return { message: "El documento fue eliminado", status: true };
+  } else {
+    return { message: "El documento no ha sido eliminado", status: false };
+
+  }
 }
 
 const deleteAspUisInscripcion = async (codigo_est) => {
   const connection = await mongoConnector
 
-  const inscripcion = await connection.collection('inscripcion').deleteOne({codigo_est: codigo_est}, function(err, obj) {
-    if (err) return {message: err, document:null, status:false};
-    return {document: obj.codigo_est, message: "El documento ha sido eliminado", status: true}
-  });
-  return {message: "Error 500"};
+  const inscripcion = await connection.collection('inscripcion').findOneAndDelete({ _id: codigo_est });
+
+  if (inscripcion.ok === 1) {
+    return { message: "El documento fue eliminado", status: true };
+  } else {
+    return { message: "El documento no ha sido eliminado", status: false };
+
+  }
 }
 
 

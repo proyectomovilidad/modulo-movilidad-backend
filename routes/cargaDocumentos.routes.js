@@ -10,10 +10,11 @@ const multiPartMiddleware = multipart({
 
 router.get('/getCargaDocumentosByNumeroInscripcionId/:_id', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.getCargaDocumentosByNumeroInscripcion)
 router.post('/', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.saveOrUpdateCargaDocumentos) 
-router.post('/saveDocumentoFile', multiPartMiddleware, controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.saveDocumentoFile)
+router.post('/saveDocumentoFile', multiPartMiddleware, controller.saveDocumentoFile)
 router.post('/:_id', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.saveOrUpdateCargaDocumentos)
 router.get('/getDocumentos', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.getDocumentos)
 //router.get('/getDocumentosByNombre/:fileName', controllerAutc.validacionUsuario, controllerAutc.controlRutas, controller.getDocumentosByNombre)
-router.get('/getDocumentosByNombre/:fileName',controller.getDocumentosByNombre)
+router.get('/getDocumentosByNombre/:fileName/:rename',controller.getDocumentosByNombre)
 router.post('/eliminarDocumentoByNombre/:fileName', controller.eliminarDocumentoByNombre)
+router.get('/existsDocumento/:fileName', controller.existsDocumento)
 module.exports = router
