@@ -61,7 +61,8 @@ console.log ("usuarios" , usuarios)
         status: false, message: "El usuario no esta registrado en la base de datos"
       })
     }
-
+    console.log('usuarionsdb: ',usuarios)
+    console.log('usuarionsdb: ',req.body.contrasena == usuarios[0].contrasena)
     if (req.body.contrasena == usuarios[0].contrasena) {
 
       //const bcrypt = require('bcrypt')
@@ -89,7 +90,7 @@ console.log ("usuarios" , usuarios)
         })
       }
 
-      if (req.body.rol == "estudianteExt" && Number(usuarios[0].rol) === 3 ) {
+      if (usuarios[0].rol == 3 && Number(usuarios[0].rol) === 3 ) {
         let datos = await  modelAspExt.getAspExtPersonalByCorreo(req.body.usuario);
         datos.rol = 3;
 
@@ -101,7 +102,7 @@ console.log ("usuarios" , usuarios)
         })
       }
 
-      if (req.body.rol == "profesor" && Number(usuarios[0].rol) === 4 ) {
+      if (usuarios[0].rol == 4 && Number(usuarios[0].rol) === 4 ) {
         let datos = await modelProfesores.getProfesorByCorreo(req.body.usuario);
         datos.rol = 4;
 
@@ -113,7 +114,7 @@ console.log ("usuarios" , usuarios)
         })
       }
 
-      if (req.body.rol == "profesionalrelext" && Number(usuarios[0].rol) === 5 ) {
+      if (usuarios[0].rol == 5 && Number(usuarios[0].rol) === 5 ) {
         let datos = {_id: usuarios[0]._id, correo: usuarios[0].correo, rol: 5 };
 
         return res.send({
